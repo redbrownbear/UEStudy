@@ -42,25 +42,25 @@ EBTNodeResult::Type UBTTask_CheckNearbyEnemies::AvoidNearbyEnemies(UBehaviorTree
 
     FVector ActorLocation = OwnerActor->GetActorLocation();
 
-    //UObject* CheckEnemy = BlackboardComponent->GetValueAsObject(TEXT("CheckEnemy"));
-    //if (IsValid(CheckEnemy))
-    //{
-    //    ACharacter* Enemy = Cast<ACharacter>(CheckEnemy);
-    //    if (Enemy)
-    //    {
-    //        float Distance = FVector::Dist(ActorLocation, Enemy->GetActorLocation());
-    //        if (Distance < DistanceThreshold)
-    //        {
-    //            FVector AvoidDirection = (ActorLocation - Enemy->GetActorLocation()).GetSafeNormal();
-    //            FVector NewLocation = ActorLocation + (AvoidDirection * DistanceThreshold);
+    UObject* CheckEnemy = BlackboardComponent->GetValueAsObject(TEXT("CheckEnemy"));
+    if (IsValid(CheckEnemy))
+    {
+        ACharacter* Enemy = Cast<ACharacter>(CheckEnemy);
+        if (Enemy)
+        {
+            float Distance = FVector::Dist(ActorLocation, Enemy->GetActorLocation());
+            if (Distance < DistanceThreshold)
+            {
+                FVector AvoidDirection = (ActorLocation - Enemy->GetActorLocation()).GetSafeNormal();
+                FVector NewLocation = ActorLocation + (AvoidDirection * DistanceThreshold);
 
-    //            APawn* Pawn = OwnerComp.GetAIOwner()->GetPawn();
-    //            Proxy = UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, Pawn, NewLocation);
-    //            Proxy->OnSuccess.AddDynamic(this, &ThisClass::OnResult);
-    //            Proxy->OnFail.AddDynamic(this, &ThisClass::OnResult);
-    //        }
-    //    }
-    //}
+                APawn* Pawn = OwnerComp.GetAIOwner()->GetPawn();
+                Proxy = UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, Pawn, NewLocation);
+                Proxy->OnSuccess.AddDynamic(this, &ThisClass::OnResult);
+                Proxy->OnFail.AddDynamic(this, &ThisClass::OnResult);
+            }
+        }
+    }
 
     return EBTNodeResult::Succeeded;
 }

@@ -7,6 +7,9 @@
 #include "Engine/DataAsset.h"
 #include "Enum/WeaponType.h"
 #include "Misc/Utils.h"
+
+#include "Actors/Items/Environment/UsableActor.h"
+
 #include "BasicPlayerController.generated.h"
 
 /**
@@ -29,6 +32,8 @@ protected:
 	 */
 	virtual void OnPossess(APawn* InPawn) override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	void OnChangeRotator(const FInputActionValue& InputActionValue);
 	void OnMove(const FInputActionValue& InputActionValue);
@@ -37,21 +42,27 @@ protected:
 	void OnRun(const FInputActionValue& InputActionValue);
 	void OnEndRun(const FInputActionValue& InputActionValue);
 	void OnJump(const FInputActionValue& InputActionValue);
+	void OnInterAct(const FInputActionValue& InputActionValue);
 
 	void OnChangeWeapon(const FInputActionValue& InputActionValue, EWeaponType InWeaponType);
 
 public:
 	void CrouchOver();
 	void RunOver();
+	void GetUsableActorFocus();
 
 	const FVector2D& GetMoveInputActionVector() { return InputMoveActionVector; }
 	const bool IsRunState() { return bIsRun; }
 
 private:
 	void BindingWeapon(UEnhancedInputComponent* InEnhancedInputComponent, const FName& InName, const EWeaponType& InWeaponType);
+	void CheckForInteractableActor();
 
 protected:
 	UInputMappingContext* IMC_Default = nullptr;
+
+	UPROPERTY()
+	TArray<AUsableActor*> OverlappedUsableActors;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsAiming = false;

@@ -10,6 +10,8 @@
 #include "Components/StatusComponent.h"
 
 #include "Actors/Player/BasicPlayer.h"
+#include "UI/DDHUD.h"
+
 #include "Handler/ItemEquipHandler.h"
 
 
@@ -98,6 +100,16 @@ void ABasicPlayerController::SetupInputComponent()
 		UE_LOG(LogTemp, Warning, TEXT("IA_Jump is disabled"));
 	}
 
+	if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Default, TEXT("IA_InterAct")))
+	{
+		EnhancedInputComponent->BindAction(InputAction,
+			ETriggerEvent::Started, this, &ThisClass::OnJump);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("IA_InterAct is disabled"));
+	}
+
 	{
 		BindingWeapon(EnhancedInputComponent, TEXT("IA_Weapon00"), EWeaponType::WT_None);
 		BindingWeapon(EnhancedInputComponent, TEXT("IA_Weapon01"), EWeaponType::WT_Knife);
@@ -113,6 +125,13 @@ void ABasicPlayerController::OnPossess(APawn* InPawn)
 
 	StatusComponent = InPawn->GetComponentByClass<UStatusComponent>();
 	check(StatusComponent);
+}
+
+void ABasicPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	CheckForInteractableActor();
 }
 
 void ABasicPlayerController::OnChangeRotator(const FInputActionValue& InputActionValue)
@@ -185,6 +204,18 @@ void ABasicPlayerController::OnJump(const FInputActionValue& InputActionValue)
 	ControlledCharacter->Jump();
 }
 
+void ABasicPlayerController::OnInterAct(const FInputActionValue& InputActionValue)
+{
+	if (OverlappedUsableActors.IsEmpty()) { return; }
+
+	AUsableActor* UsableActor = static_cast<AUsableActor*>(*OverlappedUsableActors.begin());
+
+	bool isUsable = UsableActor->IsActorUsable();
+
+	UsableActor->OnItemUse(isUsable);
+	UsableActor->SetActorUsable(!isUsable);
+}
+
 void ABasicPlayerController::OnChangeWeapon(const FInputActionValue& InputActionValue, EWeaponType InWeaponType)
 {
 	if (InputActionValue.Get<bool>())
@@ -227,6 +258,10 @@ void ABasicPlayerController::RunOver()
 	ControlledCharacter->SetMoveSpeed(false);
 }
 
+void ABasicPlayerController::GetUsableActorFocus()
+{
+}
+
 void ABasicPlayerController::BindingWeapon(UEnhancedInputComponent* InEnhancedInputComponent, const FName& InName, const EWeaponType& InWeaponType)
 {
 	if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Default, InName))
@@ -242,5 +277,49 @@ void ABasicPlayerController::BindingWeapon(UEnhancedInputComponent* InEnhancedIn
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is disabled"), *InName.ToString());
+	}
+}
+
+void ABasicPlayerController::CheckForInteractableActor()
+{
+	ADDHUD* HUD = Cast<ADDHUD>(GetHUD());
+	if (HUD == nullptr)
+		return;
+
+	float CenterZoneRadius = 100.0f; // 중심 부분 영역 크기
+	float InteractionDistance = 200.0f; // 상호작용 최대 거리
+
+	int32 ScreenSizeX, ScreenSizeY;
+	GetViewportSize(ScreenSizeX, ScreenSizeY);
+	FVector2D ScreenCenter = FVector2D(ScreenSizeX / 2.0f, ScreenSizeY / 2.0f);
+
+	FVector WorldLocation, WorldDirection;
+	DeprojectScreenPositionToWorld(ScreenCenter.X, ScreenCenter.Y, WorldLocation, WorldDirection);
+
+	FVector End = WorldLocation + (WorldDirection * InteractionDistance);
+
+	// 라인 트레이스 구성
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetPawn());
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, End, ECC_Visibility, Params);
+	if (HUD)
+	{	
+		if (bHit)
+		{
+			AActor* HitActor = HitResult.GetActor();
+			if (HitActor /*&& HitActor->IsA<AUsableActor>()*/)
+			{
+				if (HitActor != HUD->GetOverlappedUsableActor())
+				{
+					HUD->AddUsableActor(static_cast<AUsableActor*>(HitActor));
+				}
+			}
+		}		
+		else
+		{
+			HUD->RemoveUsableActor(static_cast<AUsableActor*>(HUD->GetOverlappedUsableActor()));
+		}
 	}
 }

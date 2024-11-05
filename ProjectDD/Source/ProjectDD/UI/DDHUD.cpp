@@ -2,6 +2,20 @@
 
 
 #include "UI/DDHUD.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "Actors/PlayerController/BasicPlayerController.h"
+#include "Actors/Items/Environment/UsableActor.h"
+
+void ADDHUD::AddUsableActor(AUsableActor* NewActor)
+{
+	Widget->AddAUsableActor(NewActor);
+}
+
+void ADDHUD::RemoveUsableActor(AUsableActor* NewActor)
+{
+	Widget->RemoveAUsableActor(NewActor);
+}
 
 void ADDHUD::BeginPlay()
 {
@@ -13,9 +27,4 @@ void ADDHUD::BeginPlay()
 	check(WidgetClass);
 	Widget = CreateWidget<UDDHUDWidget>(GetWorld(), WidgetClass);
 	Widget->AddToViewport();
-}
-
-void ADDHUD::Tick(float DeltaSeconds)
-{
-
 }
