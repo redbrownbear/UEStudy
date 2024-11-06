@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Actors/Player/BasicPlayer.h"
+
 #include "MainPlayer.generated.h"
 
 /**
@@ -17,4 +18,11 @@ class PROJECTDD_API AMainPlayer : public ABasicPlayer
 
 public:
 	AMainPlayer();
+
+protected:
+	virtual void Tick(float DeltaTime) override;
+
+protected:
+	void CheckForInteractableActor();
+	bool IsActorCorrect(AUsableActor* InUsableActor);
 };

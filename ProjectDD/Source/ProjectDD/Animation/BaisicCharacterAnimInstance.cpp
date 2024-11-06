@@ -36,19 +36,13 @@ void UBaisicCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 	else if (!Pawn) { return; }
 
-	FVector2D InputActionValue = FVector2D::ZeroVector;
-	
+
 	if (ABasicPlayerController* PC = Cast<ABasicPlayerController>(Pawn->GetController()))
-	{
-		InputActionValue = PC->GetMoveInputActionVector();
-		bIsRun = PC->IsRunState();
-	}
+		bIsRun = PC->IsRunState();	
+	
 
 	FVector Velocity = MovementComponent->Velocity;
 	Speed = UKismetMathLibrary::VSizeXY(Velocity);
-
-	BackFowardAxis = InputActionValue.X;
-	LeftRightAxis = InputActionValue.Y;
 
 	bShoudMove = !FMath::IsNearlyZero(Speed);
 
@@ -57,7 +51,7 @@ void UBaisicCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	if (bShoudMove)
 	{
-		BackFowardAxis = BackFowardAxis * Speed;
-		LeftRightAxis = LeftRightAxis * Speed;
+		BackFowardAxis = FVector::DotProduct(Pawn->GetActorForwardVector(), Velocity);//InputActionValue.X;
+		LeftRightAxis = FVector::DotProduct(Pawn->GetActorRightVector(), Velocity);//InputActionValue.Y;
 	}
 }

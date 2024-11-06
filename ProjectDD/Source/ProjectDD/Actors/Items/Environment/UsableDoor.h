@@ -15,10 +15,12 @@ class PROJECTDD_API AUsableDoor : public AUsableActor
 	GENERATED_BODY()
 	
 protected:
-	virtual void OnItemUse(bool isUsed) override;
+	virtual void OnItemUse(bool isUsable) override;
 
 
 protected:
 	float LocalRotation;
 
+	UPROPERTY(EditAnywhere)
+	bool bIsClose = true;
 };

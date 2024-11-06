@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "UI/DDHUDWidget.h"
+#include "Actors/Items/Environment/UsableActor.h"
 
 #include "DDHUD.generated.h"
 
@@ -25,10 +26,12 @@ protected:
 	//virtual void Tick(float DeltaSeconds) override;
 
 public:
-	AActor* GetOverlappedUsableActor() { return OverlappedUsableActor; }
+	TArray<AUsableActor*> GetOverlappedUsableActors() { return OverlappedUsableActor; }
+	void SetOverlappedUsableActor(AUsableActor* InOverlappedUsableActor) { OverlappedUsableActor.Add(InOverlappedUsableActor); }
+	void SetRemoveAllUsableActor() { OverlappedUsableActor.Empty(); }
 
 protected:
+	
 	class UDDHUDWidget* Widget = nullptr;
-
-	AActor* OverlappedUsableActor;
+	TArray<AUsableActor*> OverlappedUsableActor;
 };

@@ -14,6 +14,8 @@
 #include "Data/PawnData.h"
 #include "Enum/WeaponType.h"
 #include "Misc/Utils.h"
+#include "UI/DDHUD.h"
+
 #include "BasicPlayer.generated.h"
 
 UCLASS()
@@ -79,4 +81,8 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (RowType = "/Script/ProjectDD.PawnTableRow"))
 	FDataTableRowHandle DataTableRowHandle;
 	FPawnTableRow* CharacterData;
+
+protected:
+	APlayerController* PlayerController = nullptr;
+	ADDHUD* HUD = nullptr;
 };

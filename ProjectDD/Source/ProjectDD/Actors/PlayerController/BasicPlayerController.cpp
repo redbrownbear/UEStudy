@@ -6,17 +6,17 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/Character.h"
 
+#include "Handler/ItemEquipHandler.h"
 #include "Components/SoftWheelSpringArmComponent.h"
 #include "Components/StatusComponent.h"
 
 #include "Actors/Player/BasicPlayer.h"
 #include "UI/DDHUD.h"
 
-#include "Handler/ItemEquipHandler.h"
-
-
 ABasicPlayerController::ABasicPlayerController()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> Asset
 	{ TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Blueprints/Input/Player/IMC_DD.IMC_DD'") };
 	check(Asset.Object);
@@ -72,7 +72,7 @@ void ABasicPlayerController::SetupInputComponent()
 
 	if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Default, TEXT("IA_Crouch")))
 	{
-		EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Triggered, this, &ThisClass::OnCrouch);
+		EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Ongoing, this, &ThisClass::OnCrouch);
 		EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Completed, this, &ThisClass::OnEndCrouch);
 	}
 	else
@@ -103,7 +103,7 @@ void ABasicPlayerController::SetupInputComponent()
 	if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Default, TEXT("IA_InterAct")))
 	{
 		EnhancedInputComponent->BindAction(InputAction,
-			ETriggerEvent::Started, this, &ThisClass::OnJump);
+			ETriggerEvent::Started, this, &ThisClass::OnInterAct);
 	}
 	else
 	{
@@ -130,8 +130,6 @@ void ABasicPlayerController::OnPossess(APawn* InPawn)
 void ABasicPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	CheckForInteractableActor();
 }
 
 void ABasicPlayerController::OnChangeRotator(const FInputActionValue& InputActionValue)
@@ -156,6 +154,12 @@ void ABasicPlayerController::OnMove(const FInputActionValue& InputActionValue)
 	ControlledPawn->AddMovementInput(ForwardVector, ActionValue.X);
 	ControlledPawn->AddMovementInput(RightVector, ActionValue.Y);
 
+	//뒤로 달리는것 막기
+	if (ActionValue.X < 0)
+	{
+		RunOver();
+	}
+
 	InputMoveActionVector = ActionValue;
 }
 
@@ -178,9 +182,7 @@ void ABasicPlayerController::OnRun(const FInputActionValue& InputActionValue)
 	if (StatusComponent && (!StatusComponent->CanMove() || StatusComponent->CanAttack())) { return; }
 
 	ACharacter* ControlledCharacter = Cast<ACharacter>(GetPawn());
-	FVector Direction = ControlledCharacter->GetMovementComponent()->Velocity;
-	if (Direction.X <= 0) { return; }
-	
+
 	if (ABasicPlayer* ChildCharacter = Cast<ABasicPlayer>(ControlledCharacter))
 	{
 		ChildCharacter->SetMoveSpeed(true);
@@ -193,8 +195,7 @@ void ABasicPlayerController::OnEndRun(const FInputActionValue& InputActionValue)
 	//플레이어 전용
 	//시간 나면 클래스하나 더 만들어서 상속받아쓰기
 
-	RunOver();
-	bIsRun = false;
+	RunOver();	
 }
 
 void ABasicPlayerController::OnJump(const FInputActionValue& InputActionValue)
@@ -206,14 +207,18 @@ void ABasicPlayerController::OnJump(const FInputActionValue& InputActionValue)
 
 void ABasicPlayerController::OnInterAct(const FInputActionValue& InputActionValue)
 {
-	if (OverlappedUsableActors.IsEmpty()) { return; }
+	ADDHUD* HUD = Cast<ADDHUD>(GetHUD());
+	if (HUD == nullptr)
+		return;
 
-	AUsableActor* UsableActor = static_cast<AUsableActor*>(*OverlappedUsableActors.begin());
+	if (HUD->GetOverlappedUsableActors().IsEmpty())
+		return;
+
+	AUsableActor* UsableActor = static_cast<AUsableActor*>(HUD->GetOverlappedUsableActors()[0]);
 
 	bool isUsable = UsableActor->IsActorUsable();
 
 	UsableActor->OnItemUse(isUsable);
-	UsableActor->SetActorUsable(!isUsable);
 }
 
 void ABasicPlayerController::OnChangeWeapon(const FInputActionValue& InputActionValue, EWeaponType InWeaponType)
@@ -256,6 +261,7 @@ void ABasicPlayerController::RunOver()
 	if (StatusComponent && !StatusComponent->CanMove()) { return; }
 	ABasicPlayer* ControlledCharacter = Cast<ABasicPlayer>(GetPawn());
 	ControlledCharacter->SetMoveSpeed(false);
+	bIsRun = false;
 }
 
 void ABasicPlayerController::GetUsableActorFocus()
@@ -277,49 +283,5 @@ void ABasicPlayerController::BindingWeapon(UEnhancedInputComponent* InEnhancedIn
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is disabled"), *InName.ToString());
-	}
-}
-
-void ABasicPlayerController::CheckForInteractableActor()
-{
-	ADDHUD* HUD = Cast<ADDHUD>(GetHUD());
-	if (HUD == nullptr)
-		return;
-
-	float CenterZoneRadius = 100.0f; // 중심 부분 영역 크기
-	float InteractionDistance = 200.0f; // 상호작용 최대 거리
-
-	int32 ScreenSizeX, ScreenSizeY;
-	GetViewportSize(ScreenSizeX, ScreenSizeY);
-	FVector2D ScreenCenter = FVector2D(ScreenSizeX / 2.0f, ScreenSizeY / 2.0f);
-
-	FVector WorldLocation, WorldDirection;
-	DeprojectScreenPositionToWorld(ScreenCenter.X, ScreenCenter.Y, WorldLocation, WorldDirection);
-
-	FVector End = WorldLocation + (WorldDirection * InteractionDistance);
-
-	// 라인 트레이스 구성
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(GetPawn());
-
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, End, ECC_Visibility, Params);
-	if (HUD)
-	{	
-		if (bHit)
-		{
-			AActor* HitActor = HitResult.GetActor();
-			if (HitActor /*&& HitActor->IsA<AUsableActor>()*/)
-			{
-				if (HitActor != HUD->GetOverlappedUsableActor())
-				{
-					HUD->AddUsableActor(static_cast<AUsableActor*>(HitActor));
-				}
-			}
-		}		
-		else
-		{
-			HUD->RemoveUsableActor(static_cast<AUsableActor*>(HUD->GetOverlappedUsableActor()));
-		}
 	}
 }

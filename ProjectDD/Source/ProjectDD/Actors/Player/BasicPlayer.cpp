@@ -19,7 +19,7 @@ ABasicPlayer::ABasicPlayer()
 		SpringArm->ProbeSize = 5.0;
 		SpringArm->bUsePawnControlRotation = true;
 		SpringArm->bInheritRoll = false;
-		SpringArm->SetMinMaxTargetArmLength(200.f, SpringArm->GetMaxTargetArmLength());
+		SpringArm->SetMinMaxTargetArmLength(SpringArm->GetMinTargetArmLength(), SpringArm->GetMaxTargetArmLength());
 	}
 	Camera->SetupAttachment(SpringArm);
 	Weapon->SetupAttachment(GetMesh(), SocketName::Weapon);

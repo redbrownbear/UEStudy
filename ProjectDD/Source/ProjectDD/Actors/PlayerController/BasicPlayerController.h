@@ -56,13 +56,9 @@ public:
 
 private:
 	void BindingWeapon(UEnhancedInputComponent* InEnhancedInputComponent, const FName& InName, const EWeaponType& InWeaponType);
-	void CheckForInteractableActor();
 
 protected:
 	UInputMappingContext* IMC_Default = nullptr;
-
-	UPROPERTY()
-	TArray<AUsableActor*> OverlappedUsableActors;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsAiming = false;

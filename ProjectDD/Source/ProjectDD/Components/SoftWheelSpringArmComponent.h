@@ -38,8 +38,8 @@ protected:
 	void UpdateDesiredTargetArmLength(const float DeltaTime);
 
 protected:
-	float MinTargetArmLength = 20.f;
-	float MaxTargetArmLength = 500.f;
+	float MinTargetArmLength = 100.f;
+	float MaxTargetArmLength = 300.f;
 
 	float DesiredTargetArmLength = TargetArmLength;
 

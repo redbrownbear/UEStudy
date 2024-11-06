@@ -10,12 +10,12 @@ void USoftWheelSpringArmComponent::SetDesiredAim(const float InValue)
 
 void USoftWheelSpringArmComponent::OnAiming()
 {
-	DesiredTargetArmLength = FMath::Clamp(DesiredTargetArmLength - MaxTargetArmLength, MinTargetArmLength, MaxTargetArmLength);
+	DesiredTargetArmLength = FMath::Clamp(DesiredTargetArmLength - MinTargetArmLength, MinTargetArmLength, MaxTargetArmLength);
 }
 
 void USoftWheelSpringArmComponent::OnEndAiming()
 {
-	DesiredTargetArmLength = FMath::Clamp(DesiredTargetArmLength + MinTargetArmLength, MinTargetArmLength, MaxTargetArmLength);
+	DesiredTargetArmLength = FMath::Clamp(DesiredTargetArmLength + MaxTargetArmLength, MinTargetArmLength, MaxTargetArmLength);
 }
 
 void USoftWheelSpringArmComponent::SetMinMaxTargetArmLength(const float MinLength, const float MaxLength)

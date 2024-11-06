@@ -51,10 +51,10 @@ public: // Animation
 
 public: // Movement
 	UPROPERTY(EditAnywhere, Category = "Pawn|Movement")
-	float MovementMaxSpeed = 400.f;
+	float MovementMaxSpeed = 200.f;
 
 	UPROPERTY(EditAnywhere, Category = "Pawn|Movement")
-	float RunMaxSpeed = 650.f;
+	float RunMaxSpeed = 500.f;
 
 public: //(Enemy만 적용)
 	UPROPERTY(EditAnywhere, Category = "Enemy")

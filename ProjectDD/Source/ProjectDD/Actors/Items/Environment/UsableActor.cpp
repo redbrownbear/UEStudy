@@ -6,7 +6,7 @@
 // Sets default values
 AUsableActor::AUsableActor()
 	: ItemName("")
-	, ItemAction(FText::GetEmpty())
+	, ItemAction("")
 	, IsUsable(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -18,6 +18,10 @@ AUsableActor::AUsableActor()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	//맵자체가 데이터화 된다면 
+	//OnConstruction을 추가해서 넣을것
+	SetData();
 }
 
 void AUsableActor::OnItemUse(bool isUse)
@@ -28,14 +32,21 @@ void AUsableActor::OnItemUse(bool isUse)
 FText AUsableActor::GetUseActionText()
 {
 	FText FormattedText = FText::Format(
-		FText::FromString(TEXT("{action} {name}")),
-		ItemAction,
-		FText::FromName(ItemName)
+		FText::FromString(TEXT("{name} {action}키를 누르세요.")),
+		FText::FromName(ItemName),
+		FText::FromName(ItemAction)
 	);
 
 	return FormattedText;
 }
 
+void AUsableActor::SetData()
+{
+	//여기에 테이블 추가
+
+	ItemAction = TEXT("E");
+	ItemName = TEXT("문");
+}
 
 void AUsableActor::EndOutlineFocus()
 {

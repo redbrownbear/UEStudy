@@ -14,7 +14,7 @@ void ADDHUD::AddUsableActor(AUsableActor* NewActor)
 
 void ADDHUD::RemoveUsableActor(AUsableActor* NewActor)
 {
-	Widget->RemoveAUsableActor(NewActor);
+	Widget->RemoveAUsableActor();
 }
 
 void ADDHUD::BeginPlay()

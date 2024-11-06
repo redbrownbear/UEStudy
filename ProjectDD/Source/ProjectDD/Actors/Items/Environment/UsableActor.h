@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/WidgetInteractionComponent.h"
+
 #include "UsableActor.generated.h"
 
 UCLASS()
@@ -19,10 +21,13 @@ public:
 
 	virtual void SetActorUsable(bool isUsable) { IsUsable = isUsable; }
 	virtual bool IsActorUsable() { return IsUsable; }
+	
+	virtual FText GetUseActionText();
 
 protected:
-	virtual FText GetUseActionText();
 	
+	virtual void SetData();
+
 	virtual void EndOutlineFocus();
 	virtual void BeginOutlineFocus();
 
@@ -43,7 +48,7 @@ protected:
 
 protected:
 	FName ItemName;
-	FText ItemAction;
+	FName ItemAction;
 
 	bool IsUsable;
 };

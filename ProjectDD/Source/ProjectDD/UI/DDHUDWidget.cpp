@@ -2,13 +2,36 @@
 
 
 #include "UI/DDHUDWidget.h"
+#include "Components/TextBlock.h"
 
-void UDDHUDWidget::AddAUsableActor(AUsableActor* NewItem)
+void UDDHUDWidget::NativeConstruct()
 {
-	ReceiveAddAUsableActor();
+	AUsableActorDescVerticalBox = Cast<UVerticalBox>(GetWidgetFromName(TEXT("AUsableActorDescVerticalBox")));
+	if (!AUsableActorDescVerticalBox)
+	{
+		check(false);
+		return;
+	}
 }
 
-void UDDHUDWidget::RemoveAUsableActor(AUsableActor* NewItem)
+void UDDHUDWidget::AddAUsableActor(AUsableActor* NewActor)
 {
-	ReceiveRemoveAUsableActor();
+	if (UUserWidget * ActorDescWidget = CreateWidget<UUserWidget>(GetWorld(), ActorDescWidgetClass))
+	{	
+		UTextBlock* ActorDescriptionText = Cast<UTextBlock>(ActorDescWidget->GetWidgetFromName(TEXT("UsableActorDesc")));
+		if (ActorDescriptionText)
+		{
+			ActorDescriptionText->SetText(FText::FromString(NewActor->GetUseActionText().ToString()));
+		}
+
+		AUsableActorDescVerticalBox->AddChild(ActorDescWidget);
+	}
+}
+
+void UDDHUDWidget::RemoveAUsableActor()
+{
+	if (AUsableActorDescVerticalBox->GetChildAt(0) != nullptr)
+	{
+		AUsableActorDescVerticalBox->RemoveChildAt(0);
+	}
 }

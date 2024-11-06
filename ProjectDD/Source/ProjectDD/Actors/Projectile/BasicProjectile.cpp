@@ -56,7 +56,6 @@ void ABasicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 {
 	FVector Location = GetActorLocation();
 	if (!IsValid(this)) { return; }
-
 	// BeginPlay 시점에 Overlapped 되면 들어 옴
 	if (!bFromSweep)
 	{

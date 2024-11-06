@@ -5,33 +5,30 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/VerticalBox.h"
+
+#include "Actors/Items/Environment/UsableActor.h"
+
 #include "DDHUDWidget.generated.h"
 
 /**
  * 
  */
 
-class AUsableActor;
-
 UCLASS()
 class PROJECTDD_API UDDHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-	friend class DDHUD;
+protected:
+	virtual void NativeConstruct() override;
 
 public:
-	void AddAUsableActor(AUsableActor* NewItem);
-	void RemoveAUsableActor(AUsableActor* NewItem);
+	void AddAUsableActor(AUsableActor* NewActor);
+	void RemoveAUsableActor();
 
 protected:
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "AddAUsableActor"))
-	void ReceiveAddAUsableActor();
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "RemoveAUsableActor"))
-	void ReceiveRemoveAUsableActor();
+	UVerticalBox* AUsableActorDescVerticalBox = nullptr;	
 
-protected:
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UVerticalBox* AUsableActorDescVerticalBox = nullptr;
-	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> ActorDescWidgetClass = nullptr;
 };
