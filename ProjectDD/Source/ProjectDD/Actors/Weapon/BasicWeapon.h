@@ -28,19 +28,21 @@ public:
 
 protected: // InputAction callback
     void OnFire(const FInputActionValue& InputActionValue);
+    void OnResetFire(const FInputActionValue& InputActionValue);
+
     void EndMotion();
 
     UFUNCTION(BlueprintCallable)
     virtual void Attack();
 
     UFUNCTION()
-    virtual void OnMontageEnd(UAnimMontage* Montage, bool bInterrupted);
+    virtual void OnMontageEnd(UAnimMontage* Montage, bool bInterrupted) {};
 
     UFUNCTION()
-    virtual void OnAim();
+    virtual void OnAim() {};
 
     UFUNCTION()
-    virtual void EndAim();
+    virtual void EndAim() {};
 
 protected:
     virtual void OnConstruction(const FTransform& Transform) override;
@@ -73,4 +75,8 @@ protected:
 protected: // Input
     class USoftWheelSpringArmComponent* SpringArm = nullptr;
     UInputMappingContext* IMC_Weapon = nullptr;
+
+//변수
+protected:
+    bool bCanfire = false;
 };

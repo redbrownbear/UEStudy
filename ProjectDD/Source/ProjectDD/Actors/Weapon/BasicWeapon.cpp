@@ -99,6 +99,7 @@ void ABasicWeapon::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 				if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Weapon, TEXT("IA_Attack")))
 				{
 					EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Triggered, this, &ThisClass::OnFire);
+					EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Completed, this, &ThisClass::OnResetFire);
 				}
 				else
 				{
@@ -121,11 +122,16 @@ void ABasicWeapon::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 
 void ABasicWeapon::OnFire(const FInputActionValue& InputActionValue)
 {
-	if (!OwnerStatusComponent->CanAttack())
+	if (!OwnerStatusComponent->IsAim())
 		return;
 
 	EndMotion();
-	Attack();
+	Attack();	
+}
+
+void ABasicWeapon::OnResetFire(const FInputActionValue& InputActionValue)
+{
+	bCanfire = true;
 }
 
 void ABasicWeapon::EndMotion()
@@ -139,29 +145,18 @@ void ABasicWeapon::EndMotion()
 
 void ABasicWeapon::Attack()
 {
+	if (bCanfire == false)
+		return;
+
 	if (WeaponTableRow->WeaponAttackMontage)
 	{
 		// 모든 몽타주가 재생 중이지 않을 때
 		if (!BasicAnimInstance->Montage_IsPlaying(nullptr))
 		{
 			BasicAnimInstance->Montage_Play(WeaponTableRow->WeaponAttackMontage);
+			bCanfire = false;
 		}
 	}
-}
-
-void ABasicWeapon::OnMontageEnd(UAnimMontage* Montage, bool bInterrupted)
-{
-
-}
-
-void ABasicWeapon::OnAim()
-{
-
-}
-
-void ABasicWeapon::EndAim()
-{
-
 }
 
 void ABasicWeapon::OnConstruction(const FTransform& Transform)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Components/StatusComponent.h"
 #include "BaisicCharacterAnimInstance.generated.h"
 
 /**
@@ -26,6 +27,9 @@ protected:
 	UPROPERTY()
 	class UPawnMovementComponent* MovementComponent;
 
+	UPROPERTY()
+	class UStatusComponent* StatusComponent;
+
 	UPROPERTY(BlueprintReadOnly)
 	double Speed = 0.0;
 
@@ -35,7 +39,6 @@ protected:
 	bool bIsCrouch = false;
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsFalling = false;
-
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsRun = false;
 

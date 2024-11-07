@@ -11,7 +11,7 @@
 #include "Components/StatusComponent.h"
 
 #include "Actors/Player/BasicPlayer.h"
-#include "UI/DDHUD.h"
+#include "UI/HUD/DDHUD.h"
 
 ABasicPlayerController::ABasicPlayerController()
 {
@@ -32,7 +32,7 @@ void ABasicPlayerController::BeginPlay()
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	Subsystem->AddMappingContext(IMC_Default, 0);
 
-	// 컨트롤러에 의해 캐릭터가 회전하도록 설정 (Yaw 회전만)
+	// 컨트롤러에 의해 캐릭터가 회전하도록 설정 (Yaw 회전만)a
 	APawn* ControlledPawn = GetPawn();
 	if (ControlledPawn)
 	{
@@ -150,15 +150,9 @@ void ABasicPlayerController::OnMove(const FInputActionValue& InputActionValue)
 	const FVector ForwardVector = UKismetMathLibrary::GetForwardVector(RotationYaw);
 	const FVector RightVector = UKismetMathLibrary::GetRightVector(RotationYaw);
 
-	APawn* ControlledPawn = GetPawn();
-	ControlledPawn->AddMovementInput(ForwardVector, ActionValue.X);
-	ControlledPawn->AddMovementInput(RightVector, ActionValue.Y);
-
-	//뒤로 달리는것 막기
-	if (ActionValue.X < 0)
-	{
-		RunOver();
-	}
+	ABasicPlayer* ControlledCharacter = Cast<ABasicPlayer>(GetPawn());
+	ControlledCharacter->AddMovementInput(ForwardVector, ActionValue.X);
+	ControlledCharacter->AddMovementInput(RightVector, ActionValue.Y);
 
 	InputMoveActionVector = ActionValue;
 }
@@ -166,7 +160,7 @@ void ABasicPlayerController::OnMove(const FInputActionValue& InputActionValue)
 void ABasicPlayerController::OnCrouch(const FInputActionValue& InputActionValue)
 {
 	if (StatusComponent && !StatusComponent->CanMove()) { return; }
-	ACharacter* ControlledCharacter = Cast<ACharacter>(GetPawn());
+	ABasicPlayer* ControlledCharacter = Cast<ABasicPlayer>(GetPawn());
 
 	ControlledCharacter->Crouch();
 }
@@ -178,35 +172,32 @@ void ABasicPlayerController::OnEndCrouch(const FInputActionValue& InputActionVal
 
 void ABasicPlayerController::OnRun(const FInputActionValue& InputActionValue)
 {
-	//플레이어 전용
-	if (StatusComponent && (!StatusComponent->CanMove() || StatusComponent->CanAttack())) { return; }
+	if (StatusComponent && (!StatusComponent->CanMove() || StatusComponent->IsAim())) { return; }
 
-	ACharacter* ControlledCharacter = Cast<ACharacter>(GetPawn());
-
-	if (ABasicPlayer* ChildCharacter = Cast<ABasicPlayer>(ControlledCharacter))
+	if (ABasicPlayer* ChildCharacter = Cast<ABasicPlayer>(GetPawn()))
 	{
-		ChildCharacter->SetMoveSpeed(true);
-		bIsRun = true;
+		bool IsForward = InputMoveActionVector.X < 0 ? false : true;
+		
+		ChildCharacter->SetMoveSpeed(IsForward);
+		StatusComponent->SetRun(IsForward);
 	}	
 }
 
 void ABasicPlayerController::OnEndRun(const FInputActionValue& InputActionValue)
 {
-	//플레이어 전용
-	//시간 나면 클래스하나 더 만들어서 상속받아쓰기
-
 	RunOver();	
 }
 
 void ABasicPlayerController::OnJump(const FInputActionValue& InputActionValue)
 {
 	if (StatusComponent && !StatusComponent->CanMove()) { return; }
-	ACharacter* ControlledCharacter = Cast<ACharacter>(GetPawn());
+	ABasicPlayer* ControlledCharacter = Cast<ABasicPlayer>(GetPawn());
 	ControlledCharacter->Jump();
 }
 
 void ABasicPlayerController::OnInterAct(const FInputActionValue& InputActionValue)
 {
+	//HUD에 바로 연결하는 식이 아닌 추가 매니저를 만들자...
 	ADDHUD* HUD = Cast<ADDHUD>(GetHUD());
 	if (HUD == nullptr)
 		return;
@@ -252,7 +243,7 @@ void ABasicPlayerController::OnChangeWeapon(const FInputActionValue& InputAction
 void ABasicPlayerController::CrouchOver()
 {
 	if (StatusComponent && !StatusComponent->CanMove()) { return; }
-	ACharacter* ControlledCharacter = Cast<ACharacter>(GetPawn());
+	ABasicPlayer* ControlledCharacter = Cast<ABasicPlayer>(GetPawn());
 	ControlledCharacter->UnCrouch();
 }
 
@@ -261,7 +252,7 @@ void ABasicPlayerController::RunOver()
 	if (StatusComponent && !StatusComponent->CanMove()) { return; }
 	ABasicPlayer* ControlledCharacter = Cast<ABasicPlayer>(GetPawn());
 	ControlledCharacter->SetMoveSpeed(false);
-	bIsRun = false;
+	StatusComponent->SetRun(false);
 }
 
 void ABasicPlayerController::GetUsableActorFocus()

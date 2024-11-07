@@ -19,6 +19,7 @@ namespace SocketName
 {
 	static inline FName Weapon = TEXT("Weapon");
 	static inline FName Muzzle = TEXT("Muzzle"); // 총구
+	static inline FName WeaponHand = TEXT("r_hand");	//무기를 든 손(애니메이션 감도)
 }
 
 namespace MF_PostEffect

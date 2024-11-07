@@ -20,6 +20,9 @@ void UBaisicCharacterAnimInstance::NativeInitializeAnimation()
 
 	MovementComponent = Pawn->GetMovementComponent();
 	check(MovementComponent);
+
+	StatusComponent = Pawn->GetComponentByClass<UStatusComponent>();
+	check(StatusComponent);
 }
 
 void UBaisicCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -36,11 +39,8 @@ void UBaisicCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 	else if (!Pawn) { return; }
 
-
-	if (ABasicPlayerController* PC = Cast<ABasicPlayerController>(Pawn->GetController()))
-		bIsRun = PC->IsRunState();	
+	bIsRun = StatusComponent->IsRun();
 	
-
 	FVector Velocity = MovementComponent->Velocity;
 	Speed = UKismetMathLibrary::VSizeXY(Velocity);
 

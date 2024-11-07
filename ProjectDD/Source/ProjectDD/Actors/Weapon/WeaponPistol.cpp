@@ -24,7 +24,11 @@ void AWeaponPistol::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 
 void AWeaponPistol::OnAim()
 {
-	if (!OwnerStatusComponent->CanAttack())
+	//rifle과 합치는게 좋겠다...
+	if (OwnerStatusComponent->IsRun())
+		return;
+
+	if (!OwnerStatusComponent->IsAim())
 	{
 		OwnerStatusComponent->SetAim(true);
 		ParticleSystemComponent->Activate(false);
@@ -35,7 +39,7 @@ void AWeaponPistol::OnAim()
 	MuzzleTransform = SkeletalMeshComponent->GetSocketTransform(SocketName::Muzzle);
 
 	FVector StartLocation = MuzzleTransform.GetLocation();
-	FVector EndLocation = StartLocation + (GetActorRotation().Vector() * 10000.0f);
+	FVector EndLocation = StartLocation + (MuzzleTransform.GetRotation().Vector() * 10000.0f);
 	FHitResult HitResult;
 
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility);
@@ -45,7 +49,6 @@ void AWeaponPistol::OnAim()
 		EndLocation = HitResult.ImpactPoint;
 	}
 
-	ParticleSystemComponent->SetBeamSourcePoint(0, StartLocation, 0);
 	ParticleSystemComponent->SetBeamTargetPoint(0, EndLocation, 0);
 }
 
@@ -66,7 +69,7 @@ void AWeaponPistol::Tick(float DeltaTime)
 
 void AWeaponPistol::UpdateDesiredAimRotation(const float DeltaTime)
 {
-	if (!OwnerStatusComponent->CanAttack())
+	if (!OwnerStatusComponent->IsAim())
 		return;
 
 	{
@@ -88,9 +91,6 @@ void AWeaponPistol::UpdateDesiredAimRotation(const float DeltaTime)
 		const FRotator LerpShortestPathRotation = UKismetMathLibrary::RLerp(AimRotation, DesiredAimRotation, Alpha, true);
 		const FRotator LerpRotation = UKismetMathLibrary::RLerp(AimRotation, DesiredAimRotation, Alpha, false);
 		FRotator NewRotation = FRotator(LerpShortestPathRotation.Pitch, LerpRotation.Yaw, LerpShortestPathRotation.Roll);
-		//NewRotation.Pitch = UKismetMathLibrary::Wrap(NewRotation.Pitch, 0.0, 360.0);
-		//NewRotation.Yaw = UKismetMathLibrary::ClampAngle(NewRotation.Yaw, -179.0, 179.0);
-		//NewRotation.Roll = UKismetMathLibrary::ClampAngle(NewRotation.Roll, -360.0, 360.0);
 		BasicAnimInstance->SetAimRotation(NewRotation);
 	}
 }

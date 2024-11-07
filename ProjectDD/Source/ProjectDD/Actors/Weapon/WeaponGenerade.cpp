@@ -13,8 +13,6 @@ void AWeaponGenerade::OnMontageEnd(UAnimMontage* Montage, bool bInterrupted)
 
 void AWeaponGenerade::Attack()
 {
-	OwnerStatusComponent->SetAim(true);
-
 	Super::Attack();
 
 	OwnerStatusComponent->SetAttack(true);

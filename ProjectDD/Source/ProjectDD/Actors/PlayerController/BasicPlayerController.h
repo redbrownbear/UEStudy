@@ -52,7 +52,6 @@ public:
 	void GetUsableActorFocus();
 
 	const FVector2D& GetMoveInputActionVector() { return InputMoveActionVector; }
-	const bool IsRunState() { return bIsRun; }
 
 private:
 	void BindingWeapon(UEnhancedInputComponent* InEnhancedInputComponent, const FName& InName, const EWeaponType& InWeaponType);
@@ -68,6 +67,4 @@ protected:
 
 	UPROPERTY()
 	FVector2D InputMoveActionVector;
-
-	bool bIsRun;
 };

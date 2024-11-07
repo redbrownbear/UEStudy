@@ -22,9 +22,20 @@ void AWeapnRiffle::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 	EndAim();
 }
 
+void AWeapnRiffle::Attack()
+{
+	Super::Attack();
+
+	bCanfire = true;
+}
+
 void AWeapnRiffle::OnAim()
 {
-	if (!OwnerStatusComponent->CanAttack())
+	//Pistol과 합치는게 좋겠다...
+	if (OwnerStatusComponent->IsRun())
+		return;
+
+	if (!OwnerStatusComponent->IsAim())
 	{
 		OwnerStatusComponent->SetAim(true);
 		ParticleSystemComponent->Activate(false);
@@ -45,8 +56,7 @@ void AWeapnRiffle::OnAim()
 		EndLocation = HitResult.ImpactPoint;
 	}
 
-	ParticleSystemComponent->SetBeamSourcePoint(0, StartLocation, 0);
-	ParticleSystemComponent->SetBeamTargetPoint(0, EndLocation, 0);
+	ParticleSystemComponent->SetBeamTargetPoint(0, EndLocation, 0);	
 }
 
 void AWeapnRiffle::EndAim()
@@ -66,9 +76,6 @@ void AWeapnRiffle::Tick(float DeltaTime)
 
 void AWeapnRiffle::UpdateDesiredAimRotation(const float DeltaTime)
 {
-	if (!OwnerStatusComponent->CanAttack())
-		return;
-
 	{
 		const FRotator OwnerRotation = OwningPawn->GetActorRotation();
 		FRotator OwnerInvRotation = OwnerRotation.GetInverse();
@@ -88,9 +95,7 @@ void AWeapnRiffle::UpdateDesiredAimRotation(const float DeltaTime)
 		const FRotator LerpShortestPathRotation = UKismetMathLibrary::RLerp(AimRotation, DesiredAimRotation, Alpha, true);
 		const FRotator LerpRotation = UKismetMathLibrary::RLerp(AimRotation, DesiredAimRotation, Alpha, false);
 		FRotator NewRotation = FRotator(LerpShortestPathRotation.Pitch, LerpRotation.Yaw, LerpShortestPathRotation.Roll);
-		//NewRotation.Pitch = UKismetMathLibrary::Wrap(NewRotation.Pitch, 0.0, 360.0);
-		//NewRotation.Yaw = UKismetMathLibrary::ClampAngle(NewRotation.Yaw, -179.0, 179.0);
-		//NewRotation.Roll = UKismetMathLibrary::ClampAngle(NewRotation.Roll, -360.0, 360.0);
+
 		BasicAnimInstance->SetAimRotation(NewRotation);
 	}
 }

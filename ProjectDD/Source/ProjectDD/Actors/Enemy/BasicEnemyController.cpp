@@ -119,7 +119,7 @@ void ABasicEnemyController::SetPatrolPath(TObjectPtr<USplineComponent> NewPathFi
 
 	if (!IsValid(BrainComponent))
 	{
-		UBehaviorTree* BehaviorTree = LoadObject<UBehaviorTree>(nullptr, TEXT("/Script/AIModule.BehaviorTree'/Game/Blueprints/Enemy/BT_BasicEnemy.BT_BasicEnemy'"));
+		UBehaviorTree* BehaviorTree = LoadObject<UBehaviorTree>(nullptr, TEXT("/Script/AIModule.BehaviorTree'/Game/Blueprints/Enemy/AI/BT_BasicEnemy.BT_BasicEnemy'"));
 		check(BehaviorTree);
 		RunBehaviorTree(BehaviorTree);
 	}

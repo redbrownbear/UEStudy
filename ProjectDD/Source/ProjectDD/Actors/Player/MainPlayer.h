@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Actors/Player/BasicPlayer.h"
 
+#include "UI/HUD/DDHUD.h"
 #include "MainPlayer.generated.h"
 
 /**
@@ -25,4 +26,7 @@ protected:
 protected:
 	void CheckForInteractableActor();
 	bool IsActorCorrect(AUsableActor* InUsableActor);
+
+protected:
+	ADDHUD* HUD;
 };

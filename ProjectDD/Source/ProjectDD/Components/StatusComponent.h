@@ -20,9 +20,14 @@ public:
 
 	void SetAim(const bool bFlag) { bAim = bFlag; }
 	void SetAttack(const bool bFlag) { bAttack = bFlag; }
-	bool CanAttack()const { return bAim; }
-	bool CanMove() const { return !bAttack && !bDie; }
+	void SetRun(const bool bFlag) { bIsRun = bFlag; }
+	
+	bool IsAim()const { return bAim; }
 	bool IsDie() const { return bDie; }
+	bool IsRun()const { return bIsRun; }
+		
+	bool CanMove() const { return !bAttack && !bDie; }
+
 	float GetHP() const { return HP; }
 
 	AController* GetLastInstigator() const { return LastInstigator; }
@@ -41,6 +46,7 @@ public:
 protected:
 	bool bAttack = false;
 	bool bAim = false;
+	bool bIsRun = false;
 	bool bDie = false;
 	float MaxHP = 4.f;
 	float HP = 4.f;
