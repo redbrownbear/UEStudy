@@ -90,6 +90,9 @@ void ABasicEnemy::SpawnData(const FDataTableRowHandle& InDataTableRowHandle, con
 		AIControllerClass = EnemyData->AIControllerClass;
 		Weapon->SetData(EnemyData->Weapon);
 	}
+	{
+		StatusComponent->SetStatus(EnemyData->Status);
+	}
 }
 
 void ABasicEnemy::InitPathFinder()
@@ -103,6 +106,11 @@ void ABasicEnemy::InitPathFinder()
 			BasicEnemyController->SetPatrolPath(PathFinderRef->GetPath());
 		}
 	}
+}
+
+void ABasicEnemy::FireProjectile(int32 InCount)
+{
+	StatusComponent->ProjectileFire(GetController(), InCount, 100);
 }
 
 // Called when the game starts or when spawned
@@ -149,8 +157,7 @@ float ABasicEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACo
 
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		AnimInstance->Montage_Play(CurrentDieMontage);
-		UKismetSystemLibrary::K2_SetTimer(this, TEXT("OnDie"),
-			EnemyData->DieMontage[Index]->GetPlayLength() - 0.1f, false);
+		UKismetSystemLibrary::K2_SetTimer(this, TEXT("OnDie"), EnemyData->DieMontage[Index]->GetPlayLength() - 0.1f, false);
 	}
 	else if (!StatusComponent->IsDie() && !EnemyData->HitReactMontage.IsEmpty())
 	{

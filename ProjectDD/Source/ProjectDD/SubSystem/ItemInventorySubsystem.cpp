@@ -6,6 +6,9 @@
 
 UItemInventorySubsystem::UItemInventorySubsystem()
 {
+	//초기에 테이블에서 가져오는게 아니라 데이터를 불러오는형식 이게 맞다
+	//캐릭터 정보를 불러오는 것으로 최종 변환 해야함!
+
 	{
 		static ConstructorHelpers::FObjectFinder<UDataTable> Asset(TEXT("/Script/Engine.DataTable'/Game/Data/DT_Weapon.DT_Weapon'"));
 		check(Asset.Object);

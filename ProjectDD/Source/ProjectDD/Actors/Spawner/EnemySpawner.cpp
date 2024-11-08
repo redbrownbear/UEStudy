@@ -2,9 +2,9 @@
 
 
 #include "Actors/Spawner/EnemySpawner.h"
-#include "SubSystem/EnemySpawnSubsystem.h"
-#include "Data/EnemySpawnData.h"
 #include "Actors/Enemy/BasicEnemy.h"
+
+#include "SubSystem/EnemySpawnSubsystem.h"
 
 
 // Sets default values
@@ -42,7 +42,7 @@ void AEnemySpawner::SetEnemy()
     }
 }
 
-void AEnemySpawner::SpawnEnemy(const FEnemySpawnTableRow& InSpawnData, const FDataTableRowHandle& InPawnHandle)
+void AEnemySpawner::SpawnEnemy(const FEnemySpawnTableRow& InSpawnData, const FDataTableRowHandle& InPawnHandle) 
 {
     ABasicEnemy* SpawnedEnemy = GetWorld()->SpawnActor<ABasicEnemy>(InSpawnData.EnemyClass, InSpawnData.SpawnLocation, InSpawnData.SpawnRotation);
     if (SpawnedEnemy)

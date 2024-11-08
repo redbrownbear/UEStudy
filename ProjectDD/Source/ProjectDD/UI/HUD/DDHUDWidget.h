@@ -6,7 +6,10 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/VerticalBox.h"
 
+#include "UI/UI_PlayerStatus.h"
+
 #include "Actors/Items/Environment/UsableActor.h"
+#include "Data/PawnStatusData.h"
 
 #include "DDHUDWidget.generated.h"
 
@@ -23,12 +26,20 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
-	void AddAUsableActor(AUsableActor* NewActor);
-	void RemoveAUsableActor();
+	void AddUsableActor(AUsableActor* NewActor);
+	void RemoveUseActor(AUsableActor* NewActor);
+	void RemoveUsableActorsAll();
+
+public:
+	void UpdateStatus(FPawnStatusTableRow Status);
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> ActorDescWidgetClass = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	UVerticalBox* AUsableActorDescVerticalBox = nullptr;	
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> ActorDescWidgetClass = nullptr;
+	UUI_PlayerStatus* UIPlayerStatClass = nullptr;
 };

@@ -25,8 +25,12 @@ protected:
 
 protected:
 	void CheckForInteractableActor();
-	bool IsActorCorrect(AUsableActor* InUsableActor);
 
 protected:
-	ADDHUD* HUD;
+	UPROPERTY()
+	ADDHUD* HUD = nullptr;
+
+	FCollisionShape BoxShape;
+
+	FCollisionQueryParams Params;
 };

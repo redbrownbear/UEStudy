@@ -6,6 +6,11 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsystem/ActorPoolSubsystem.h"
+#include "GameFramework/PlayerController.h"
+
+#include "Actors/Enemy/BasicEnemy.h"
+#include "Actors/Player/BasicPlayer.h"
+
 
 // Sets default values
 ABasicProjectile::ABasicProjectile()
@@ -30,7 +35,6 @@ void ABasicProjectile::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 	if (!Data) { ensure(false); return; }
 
 	ProjectileData = Data;
-
 	InitialLifeSpan = Data->LifeSpan;
 
 	ProjectileMovementComponent->InitialSpeed = Data->MaxSpeed;
@@ -42,6 +46,21 @@ void ABasicProjectile::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 
 	StaticMeshComponent->MoveIgnoreActors.Empty();
 	StaticMeshComponent->MoveIgnoreActors.Add(GetOwner());
+}
+
+void ABasicProjectile::ProjectileFire(APawn* InOwner, int32 InCount)
+{
+	ABasicEnemy* Enemy = Cast<ABasicEnemy>(InOwner);
+	if (Enemy)
+	{
+		Enemy->FireProjectile(InCount);
+	}
+
+	ABasicPlayer* Player = Cast<ABasicPlayer>(InOwner);
+	if (Player)
+	{
+		Player->FireProjectile(InCount);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -72,7 +91,7 @@ void ABasicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 	Destroy();
 
-	UGameplayStatics::ApplyDamage(OtherActor, 1.f, GetInstigator()->GetController(), this, nullptr);
+	UGameplayStatics::ApplyDamage(OtherActor, ProjectileData->Damage, GetInstigator()->GetController(), this, nullptr);
 }
 
 // Called every frame

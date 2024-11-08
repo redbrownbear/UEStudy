@@ -78,6 +78,10 @@ void ABasicPlayer::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 		SkeletalMeshComponent->SetRelativeTransform(CharacterData->MeshTransform);
 		SkeletalMeshComponent->SetAnimClass(CharacterData->AnimClass);
 	}
+
+	{
+		StatusComponent->SetStatus(CharacterData->Status);
+	}
 }
 
 float ABasicPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -153,6 +157,11 @@ void ABasicPlayer::SetMoveSpeed(const bool IsRun)
 
 		Movement->MaxWalkSpeed = MaxMoveSpeed;
 	}
+}
+
+void ABasicPlayer::FireProjectile(int32 InCount)
+{
+	StatusComponent->ProjectileFire(GetController(), InCount, 100);
 }
 
 void ABasicPlayer::SwitchWeaponAnim(EWeaponType NewWeapon)

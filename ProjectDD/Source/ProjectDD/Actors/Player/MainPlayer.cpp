@@ -2,6 +2,7 @@
 
 
 #include "Actors/Player/MainPlayer.h"
+#include "SubSystem//HUDManagerSubsystem.h"
 #include "Engine/OverlapResult.h"
 
 AMainPlayer::AMainPlayer()
@@ -27,61 +28,43 @@ void AMainPlayer::CheckForInteractableActor()
 	if (HUD == nullptr)
 		return;
 
-	if (HUD)
+	UHUDManagerSubsystem* HUDManager = GetWorld()->GetGameInstance()->GetSubsystem<UHUDManagerSubsystem>();
+	if (!HUDManager)
 	{
-		TArray<FOverlapResult> OverlapResults;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
+		check(false);
+		return;
+	}
 
-		FVector ForwardVector = GetActorRotation().Vector();
-		FVector BoxCenter = GetActorLocation() + (ForwardVector * 70.0f) + FVector(0.0f, 0.0f, 0.0f);
-		FVector BoxExtent = FVector(90.0f, 70.0f, 70.0f);
+	Params.AddIgnoredActor(this);
 
-		FCollisionShape BoxShape;
-		FVector3f BoxExtent3F = FVector3f(BoxExtent);
-		BoxShape.SetBox(BoxExtent3F);
+	FVector ForwardVector = GetActorRotation().Vector();
+	FVector BoxCenter = GetActorLocation() + (ForwardVector * 70.0f) + FVector(0.0f, 0.0f, 0.0f);
+	FVector BoxExtent = FVector(90.0f, 70.0f, 70.0f);
 
-		bool bOverlapping = GetWorld()->OverlapMultiByChannel(OverlapResults, BoxCenter, GetActorRotation().Quaternion(), ECC_Visibility, BoxShape, Params);
+	FVector3f BoxExtent3F = FVector3f(BoxExtent);
+	BoxShape.SetBox(BoxExtent3F);
 
-		if (bOverlapping)
+	TArray<FOverlapResult> OverlapResults;
+	bool bOverlapping = GetWorld()->OverlapMultiByChannel(OverlapResults, BoxCenter, GetActorRotation().Quaternion(), ECC_Visibility, BoxShape, Params);
+
+	if (!HUDManager->GetOverlappedUsableActors().IsEmpty())
+	{
+		HUDManager->RemoveAllUsableActor();
+	}
+
+	if (bOverlapping)
+	{
+		// 새롭게 감지된 액터 처리
+		for (const FOverlapResult& NewResult : OverlapResults)
 		{
-			// 감지된 액터 처리
-			for (const FOverlapResult& Result : OverlapResults)
-			{
-				AUsableActor* OverlappingActor = Cast<AUsableActor>(Result.GetActor());
-				if (OverlappingActor)
+			AUsableActor* OverlappingActor = Cast<AUsableActor>(NewResult.GetActor());
+			if (OverlappingActor)
+			{						
+				if(!HUDManager->GetOverlappedUsableActors().Contains(OverlappingActor))
 				{
-					//TArray에서 찾는 로직 추가
-					if (!IsActorCorrect(OverlappingActor))
-					{
-						HUD->AddUsableActor(static_cast<AUsableActor*>(OverlappingActor));
-						HUD->SetOverlappedUsableActor(OverlappingActor);
-						break;
-					}
+					HUDManager->AddOverlappedUsableActor(static_cast<AUsableActor*>(OverlappingActor));
 				}
 			}
 		}
-		else
-		{
-			if (!HUD->GetOverlappedUsableActors().IsEmpty())
-			{
-				HUD->RemoveUsableActor(nullptr);
-				HUD->SetRemoveAllUsableActor();
-			}
-		}
 	}
-}
-
-bool AMainPlayer::IsActorCorrect(AUsableActor* InUsableActor)
-{
-	if (HUD->GetOverlappedUsableActors().IsEmpty())
-		return false;
-
-	for (const AUsableActor* usableActor : HUD->GetOverlappedUsableActors())
-	{
-		if (usableActor == InUsableActor)
-			return true;
-	}
-
-	return false;
 }

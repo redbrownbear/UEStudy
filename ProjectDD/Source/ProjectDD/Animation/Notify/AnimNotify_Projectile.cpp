@@ -86,4 +86,6 @@ void UAnimNotify_Projectile::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 	Projectile->FinishSpawning(NewTransform);
 	Projectile->SetActorRotation(ProjectileRotator.Quaternion() * FQuat(FRotator(0.0f, -90.0f, 0.0f)));
+	
+	Projectile->ProjectileFire(OwningPawn, 1);//한발씩 소모
 }

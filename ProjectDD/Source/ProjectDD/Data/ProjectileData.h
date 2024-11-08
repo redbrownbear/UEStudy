@@ -34,6 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	float LifeSpan;
 
+	UPROPERTY(EditAnywhere, Category = "Projectile|Damage")
+	float Damage;
+
 	UPROPERTY(EditAnywhere, Category = "Projectile|Effect", meta = (RowType = "/Script/ProjectDD.EffectTableRow"))
 	FDataTableRowHandle HitEffectTableRowHandle;
 };

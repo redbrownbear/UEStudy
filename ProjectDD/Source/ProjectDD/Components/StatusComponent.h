@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Data/PawnStatusData.h"
+
 #include "StatusComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHPChanged, float, CurrentHP, float, MaxHP);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBulletChanged, int32, CurrentCount, int32, MaxCount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDie);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -18,19 +21,20 @@ public:
 	// Sets default values for this component's properties
 	UStatusComponent();
 
+	void SetStatus(FDataTableRowHandle InDataTableRowHandle);
+	void SetUI();
+
 	void SetAim(const bool bFlag) { bAim = bFlag; }
-	void SetAttack(const bool bFlag) { bAttack = bFlag; }
-	void SetRun(const bool bFlag) { bIsRun = bFlag; }
-	
 	bool IsAim()const { return bAim; }
-	bool IsDie() const { return bDie; }
+
+	void SetRun(const bool bFlag) { bIsRun = bFlag; }
 	bool IsRun()const { return bIsRun; }
-		
+	
+	void SetDie(const bool bFlag) { bDie; }
+	bool IsDie() const { return bDie; }
+
+	void SetAttack(const bool bFlag) { bAttack = bFlag; }
 	bool CanMove() const { return !bAttack && !bDie; }
-
-	float GetHP() const { return HP; }
-
-	AController* GetLastInstigator() const { return LastInstigator; }
 
 protected:
 	// Called when the game starts
@@ -42,19 +46,31 @@ public:
 
 public:
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	void ProjectileFire(AController* EventInstigator, int32 BulletCount, int32 BulletMaxCount);
+
+protected:
+	bool IsPlayer();
+
+public:
+	AController* GetLastInstigator() const { return LastInstigator; }
+
+	//댈리게이트 통신을 위함
+public:
+	AController* LastInstigator = nullptr;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnHPChanged OnHPChanged;
+	FOnBulletChanged OnBulletChanged;
+	FOnDie OnDie;
 
 protected:
 	bool bAttack = false;
 	bool bAim = false;
 	bool bIsRun = false;
 	bool bDie = false;
-	float MaxHP = 4.f;
-	float HP = 4.f;
 
-public:
-	AController* LastInstigator = nullptr;
+	//캐릭터의 스탯
+private:
+	FPawnStatusTableRow CharacterStatus;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnHPChanged OnHPChanged;
-	FOnDie OnDie;
 };

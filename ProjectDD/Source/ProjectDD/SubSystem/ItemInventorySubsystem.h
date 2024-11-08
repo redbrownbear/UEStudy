@@ -24,5 +24,4 @@ public:
 
 protected:
 	UDataTable* WeaponDataTable;
-	
 };

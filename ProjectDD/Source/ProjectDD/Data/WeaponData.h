@@ -49,10 +49,6 @@ public: // Animation
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	TArray<UAnimMontage*> HitReactMontage;
 
-public:	//Stat
-	UPROPERTY(EditAnywhere, Category = "Stat")
-	float Damage;
-
 public: //Projectile
 	UPROPERTY(EditAnywhere, meta = (RowType = "/Script/ProjectDD.ProjectileTableRow"))
 	FDataTableRowHandle ProjectileRowHandle;

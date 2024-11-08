@@ -17,6 +17,7 @@ void ABasicEnemyController::BeginPlay()
 void ABasicEnemyController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
 	StatusComponentRef = InPawn->GetComponentByClass<UStatusComponent>();
 	StatusComponentRef->OnHPChanged.AddDynamic(this, &ThisClass::OnDamaged);
 }

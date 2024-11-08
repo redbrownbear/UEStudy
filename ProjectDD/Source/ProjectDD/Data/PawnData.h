@@ -56,6 +56,10 @@ public: // Movement
 	UPROPERTY(EditAnywhere, Category = "Pawn|Movement")
 	float RunMaxSpeed = 500.f;
 
+public:	//Status
+	UPROPERTY(EditAnywhere, Category = "Status", meta = (RowType = "/Script/ProjectDD.PawnStatusTableRow"))
+	FDataTableRowHandle Status;
+
 public: //(Enemy만 적용)
 	UPROPERTY(EditAnywhere, Category = "Enemy")
 	TSubclassOf<AAIController> AIControllerClass;

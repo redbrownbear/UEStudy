@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Data/PawnStatusData.h"
+
 #include "UI/HUD/DDHUDWidget.h"
-#include "Actors/Items/Environment/UsableActor.h"
 
 #include "DDHUD.generated.h"
 
@@ -19,19 +20,17 @@ class PROJECTDD_API ADDHUD : public AHUD
 
 public:
 	void AddUsableActor(AUsableActor* NewActor);
-	void RemoveUsableActor(AUsableActor* NewActor);
+	void RemoveUseActor(AUsableActor* NewActor);
+	void RemoveUsableActorsAll();
+
+public:
+	void SetStatus(FPawnStatusTableRow Status);
 	
 protected:
 	virtual void BeginPlay() override;
 	//virtual void Tick(float DeltaSeconds) override;
 
-public:
-	TArray<AUsableActor*> GetOverlappedUsableActors() { return OverlappedUsableActor; }
-	void SetOverlappedUsableActor(AUsableActor* InOverlappedUsableActor) { OverlappedUsableActor.Add(InOverlappedUsableActor); }
-	void SetRemoveAllUsableActor() { OverlappedUsableActor.Empty(); }
-
 protected:
 	
 	class UDDHUDWidget* Widget = nullptr;
-	TArray<AUsableActor*> OverlappedUsableActor;
 };

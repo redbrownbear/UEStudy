@@ -11,7 +11,7 @@
 #include "Components/StatusComponent.h"
 
 #include "Actors/Player/BasicPlayer.h"
-#include "UI/HUD/DDHUD.h"
+#include "SubSystem/HUDManagerSubsystem.h"
 
 ABasicPlayerController::ABasicPlayerController()
 {
@@ -198,14 +198,17 @@ void ABasicPlayerController::OnJump(const FInputActionValue& InputActionValue)
 void ABasicPlayerController::OnInterAct(const FInputActionValue& InputActionValue)
 {
 	//HUD에 바로 연결하는 식이 아닌 추가 매니저를 만들자...
-	ADDHUD* HUD = Cast<ADDHUD>(GetHUD());
-	if (HUD == nullptr)
+	UHUDManagerSubsystem* HUDManager = GetWorld()->GetGameInstance()->GetSubsystem<UHUDManagerSubsystem>();
+	if (!HUDManager)
+	{
+		check(false);
+		return;
+	}
+
+	if (HUDManager->GetOverlappedUsableActors().IsEmpty())
 		return;
 
-	if (HUD->GetOverlappedUsableActors().IsEmpty())
-		return;
-
-	AUsableActor* UsableActor = static_cast<AUsableActor*>(HUD->GetOverlappedUsableActors()[0]);
+	AUsableActor* UsableActor = static_cast<AUsableActor*>(HUDManager->GetOverlappedUsableActors()[0]);
 
 	bool isUsable = UsableActor->IsActorUsable();
 
