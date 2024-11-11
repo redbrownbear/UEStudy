@@ -29,7 +29,7 @@ void UDDHUDWidget::AddUsableActor(AUsableActor* NewActor)
 
 	if (UUserWidget * ActorDescWidget = CreateWidget<UUserWidget>(GetWorld(), ActorDescWidgetClass))
 	{	
-		UTextBlock* ActorDescriptionText = Cast<UTextBlock>(ActorDescWidget->GetWidgetFromName(TEXT("UI_Usable_Actor_Desc")));
+		UTextBlock* ActorDescriptionText = Cast<UTextBlock>(ActorDescWidget->GetWidgetFromName(TEXT("UsableActorDesc")));
 		if (ActorDescriptionText)
 		{
 			ActorDescriptionText->SetText(FText::FromString(NewActor->GetUseActionText().ToString()));

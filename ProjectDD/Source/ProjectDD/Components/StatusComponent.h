@@ -30,7 +30,7 @@ public:
 	void SetRun(const bool bFlag) { bIsRun = bFlag; }
 	bool IsRun()const { return bIsRun; }
 	
-	void SetDie(const bool bFlag) { bDie; }
+	void SetDie(const bool bFlag) { bDie = bFlag; }
 	bool IsDie() const { return bDie; }
 
 	void SetAttack(const bool bFlag) { bAttack = bFlag; }
@@ -47,6 +47,8 @@ public:
 public:
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 	void ProjectileFire(AController* EventInstigator, int32 BulletCount, int32 BulletMaxCount);
+
+	const FPawnStatusTableRow& GetCharacterStatus() { return CharacterStatus; }
 
 protected:
 	bool IsPlayer();
@@ -72,5 +74,4 @@ protected:
 	//캐릭터의 스탯
 private:
 	FPawnStatusTableRow CharacterStatus;
-
 };

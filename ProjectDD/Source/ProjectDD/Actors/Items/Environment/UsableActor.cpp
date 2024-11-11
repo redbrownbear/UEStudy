@@ -5,9 +5,7 @@
 
 // Sets default values
 AUsableActor::AUsableActor()
-	: ItemName("")
-	, ItemAction("")
-	, IsUsable(false)
+	: IsUsable(false)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -19,9 +17,7 @@ AUsableActor::AUsableActor()
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	//맵자체가 데이터화 된다면 
-	//OnConstruction을 추가해서 넣을것
-	SetData();
+	SetFolderPath(FName("ActorOnly"));
 }
 
 void AUsableActor::OnItemUse(bool isUse)
@@ -32,41 +28,28 @@ void AUsableActor::OnItemUse(bool isUse)
 FText AUsableActor::GetUseActionText()
 {
 	FText FormattedText = FText::Format(
-		FText::FromString(TEXT("{name} {action}키를 누르세요.")),
-		FText::FromName(ItemName),
-		FText::FromName(ItemAction)
+		FText::FromString(TEXT("{name} {action}")),
+		FText::FromName(ActorData.ItemName),
+		FText::FromName(ActorData.ItemAction)
 	);
 
 	return FormattedText;
 }
 
-void AUsableActor::SetData()
+void AUsableActor::SetData(const FUsableActorTableRow& InActorData)
 {
-	//여기에 테이블 추가
-
-	ItemAction = TEXT("E");
-	ItemName = TEXT("문");
-}
-
-void AUsableActor::EndOutlineFocus()
-{
-}
-
-void AUsableActor::BeginOutlineFocus()
-{
+	ActorData = InActorData;
 }
 
 // Called when the game starts or when spawned
 void AUsableActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void AUsableActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 

@@ -7,7 +7,7 @@
 void AUsableDoor::OnItemUse(bool isUsable)
 {
 	//문의 회전을 동일하게 하기 위해
-	//사실 리소스가 여러게면 하지 않아도 되는 일
+	//사실 리소스가 여러개면 하지 않아도 되는 일
 	FVector ActorScale = GetActorScale();
 	
 	float offset = ActorScale.X / FMath::Abs(ActorScale.X);

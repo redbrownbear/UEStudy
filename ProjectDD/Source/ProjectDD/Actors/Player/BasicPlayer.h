@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/TimelineComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WeaponChildActorComponent.h"
 #include "Components/SoftWheelSpringArmComponent.h"
@@ -37,6 +38,15 @@ protected:
 protected:
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	UFUNCTION()
+	virtual void OnPaperBurnEffect(float InDissolve);
+	UFUNCTION()
+	virtual void OnPaperBurnEffectEnd();
+
+protected:
+	UFUNCTION()
+	virtual void OnDie();
+
 protected:
 	virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust);
 	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust);
@@ -57,6 +67,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	virtual float GetMeleeDamage();
 
 protected:
 	/** Please add a variable description */
@@ -72,6 +84,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UStatusComponent* StatusComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UTimelineComponent* PaperBurnEffectTimelineComponent;
+	TArray<UMaterialInstanceDynamic*> MaterialInstanceDynamics;
+
+	UAnimMontage* CurrentDieMontage;
 
 protected:
 	// 현재 장착된 무기

@@ -204,3 +204,14 @@ void ABasicEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+float ABasicEnemy::GetMeleeDamage()
+{
+	float Damage = 0.0f;
+	if (StatusComponent)
+	{
+		Damage = StatusComponent->GetCharacterStatus().MeleeAttackPoint;
+	}
+	
+	return Damage;
+}

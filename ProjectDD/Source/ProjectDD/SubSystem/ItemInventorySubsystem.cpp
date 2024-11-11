@@ -55,3 +55,8 @@ FDataTableRowHandle UItemInventorySubsystem::FindItemByType(const EWeaponType We
 
 	return DataTableRowHandle;
 }
+
+void UItemInventorySubsystem::AddItem(const AUsableActor& InUsableActor)
+{
+
+}

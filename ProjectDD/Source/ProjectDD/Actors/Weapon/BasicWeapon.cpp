@@ -131,7 +131,7 @@ void ABasicWeapon::OnFire(const FInputActionValue& InputActionValue)
 
 void ABasicWeapon::OnResetFire(const FInputActionValue& InputActionValue)
 {
-	bCanfire = true;
+	ResetAttack();
 }
 
 void ABasicWeapon::EndMotion()
@@ -157,6 +157,11 @@ void ABasicWeapon::Attack()
 			bCanfire = false;
 		}
 	}
+}
+
+void ABasicWeapon::ResetAttack()
+{
+	bCanfire = true;
 }
 
 void ABasicWeapon::OnConstruction(const FTransform& Transform)

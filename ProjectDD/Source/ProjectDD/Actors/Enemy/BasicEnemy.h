@@ -61,6 +61,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	virtual float GetMeleeDamage();
+
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<APathFinder> PathFinderRef;

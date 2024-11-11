@@ -17,7 +17,6 @@ class PROJECTDD_API AUsableDoor : public AUsableActor
 protected:
 	virtual void OnItemUse(bool isUsable) override;
 
-
 protected:
 	float LocalRotation;
 

@@ -3,7 +3,10 @@
 
 #include "GameMode/DDGameMode.h"
 #include "Actors/Spawner/EnemySpawner.h"
+#include "Actors/Spawner/UsableActorSpawner.h"
+
 #include "Actors/Enemy/PathFinder.h"
+
 
 void ADDGameMode::StartPlay()
 {
@@ -18,6 +21,12 @@ void ADDGameMode::StartPlay()
     }
 
     AEnemySpawner* Spawner = GetWorld()->SpawnActor<AEnemySpawner>(AEnemySpawner::StaticClass());
+    if (Spawner)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Spawner created successfully."));
+    }
+
+    AUsableActorSpawner* ActorSpawner = GetWorld()->SpawnActor<AUsableActorSpawner>(AUsableActorSpawner::StaticClass());
     if (Spawner)
     {
         UE_LOG(LogTemp, Log, TEXT("Spawner created successfully."));

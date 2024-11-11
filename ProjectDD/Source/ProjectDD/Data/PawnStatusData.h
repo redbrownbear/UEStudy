@@ -16,16 +16,26 @@ struct PROJECTDD_API FPawnStatusTableRow : public FTableRowBase
 public:
 	UPROPERTY(EditAnywhere, Category = "Status")
 	float HP;
-
 	UPROPERTY(EditAnywhere, Category = "Status")
 	float MAXHP;
+	UPROPERTY(EditAnywhere, Category = "Status")
+	float ARMOR;
+	UPROPERTY(EditAnywhere, Category = "Status")
+	float MAXARMOR;
+	UPROPERTY(EditAnywhere, Category = "Status")
+	int32 BulletCount9mm;
+	UPROPERTY(EditAnywhere, Category = "Status")
+	int32 MaxBulletCount9mm;
+	UPROPERTY(EditAnywhere, Category = "Status")
+	int32 BulletCount556mm;
+	UPROPERTY(EditAnywhere, Category = "Status")
+	int32 MaxBulletCount556mm;
+	UPROPERTY(EditAnywhere, Category = "Status")
+	int32 GrenadeCount;
+	UPROPERTY(EditAnywhere, Category = "Status")
+	int32 MaxGrenadeCount;
 
 	UPROPERTY(EditAnywhere, Category = "Status")
 	int32 MeleeAttackPoint;
 
-	UPROPERTY(EditAnywhere, Category = "Status")
-	int32 BulletCount9mm;
-
-	UPROPERTY(EditAnywhere, Category = "Status")
-	int32 BulletCount556mm;
 };

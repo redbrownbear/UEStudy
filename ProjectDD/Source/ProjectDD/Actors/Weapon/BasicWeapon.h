@@ -34,6 +34,8 @@ protected: // InputAction callback
 
     UFUNCTION(BlueprintCallable)
     virtual void Attack();
+    UFUNCTION(BlueprintCallable)
+    virtual void ResetAttack();
 
     UFUNCTION()
     virtual void OnMontageEnd(UAnimMontage* Montage, bool bInterrupted) {};
@@ -78,5 +80,5 @@ protected: // Input
 
 //변수
 protected:
-    bool bCanfire = false;
+    bool bCanfire = true;
 };

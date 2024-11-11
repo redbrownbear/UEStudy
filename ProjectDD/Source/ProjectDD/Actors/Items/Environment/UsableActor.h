@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/WidgetInteractionComponent.h"
+#include "Data/UsableActorData.h"
 
 #include "UsableActor.generated.h"
 
@@ -24,12 +25,8 @@ public:
 	
 	virtual FText GetUseActionText();
 
-protected:
-	
-	virtual void SetData();
-
-	virtual void EndOutlineFocus();
-	virtual void BeginOutlineFocus();
+public:
+	virtual void SetData(const FUsableActorTableRow& InActorData);
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,8 +44,8 @@ protected:
 	UStaticMeshComponent* MeshComponent;
 
 protected:
-	FName ItemName;
-	FName ItemAction;
+	FUsableActorTableRow ActorData;
 
+protected:
 	bool IsUsable;
 };

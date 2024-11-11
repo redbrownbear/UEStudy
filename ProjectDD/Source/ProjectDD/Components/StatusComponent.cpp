@@ -31,9 +31,15 @@ void UStatusComponent::SetStatus(FDataTableRowHandle InDataTableRowHandle)
 
 	Status.HP = Data->HP;
 	Status.MAXHP = Data->MAXHP;
+	Status.ARMOR = Data->ARMOR;
+	Status.MAXARMOR = Data->MAXARMOR;
 	Status.MeleeAttackPoint = Data->MeleeAttackPoint;
 	Status.BulletCount9mm = Data->BulletCount9mm;
+	Status.MaxBulletCount9mm = Data->MaxBulletCount9mm;
 	Status.BulletCount556mm = Data->BulletCount556mm;
+	Status.MaxBulletCount556mm = Data->MaxBulletCount556mm;
+	Status.GrenadeCount = Data->GrenadeCount;
+	Status.MaxGrenadeCount = Data->MaxGrenadeCount;
 
 	CharacterStatus = Status;
 
@@ -83,11 +89,12 @@ float UStatusComponent::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	NewDamage = FMath::Clamp(NewDamage, 0.f, NewDamage);
 	CharacterStatus.HP -= NewDamage;
 
-	if (CharacterStatus.HP <= 0)
+	if (CharacterStatus.HP <= 0.f)
+	{
 		SetDie(true);
-
+	}
+		
 	SetUI();
-
 	{
 		LastInstigator = EventInstigator;
 		OnHPChanged.Broadcast(CharacterStatus.HP, CharacterStatus.MAXHP);

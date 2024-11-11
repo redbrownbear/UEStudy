@@ -32,6 +32,20 @@ ABasicPlayer::ABasicPlayer()
 	SpringArm->SetRelativeTransform(SpringArmTransform);
 
 	StatusComponent = CreateDefaultSubobject<UStatusComponent>(TEXT("StatusComponent"));
+
+	{
+		static ConstructorHelpers::FObjectFinder<UCurveFloat> CurveAsset(TEXT("/Script/Engine.CurveFloat'/Game/Blueprints/Effect/CV_PaperBurn.CV_PaperBurn'"));
+		check(CurveAsset.Object);
+		PaperBurnEffectTimelineComponent = CreateDefaultSubobject<UTimelineComponent>(TEXT("PaperBurnEffectTimelineComponent"));
+
+		FOnTimelineFloat Delegate;
+		Delegate.BindDynamic(this, &ThisClass::OnPaperBurnEffect);
+		PaperBurnEffectTimelineComponent->AddInterpFloat(CurveAsset.Object, Delegate);
+
+		FOnTimelineEvent EndDelegate;
+		EndDelegate.BindDynamic(this, &ThisClass::OnPaperBurnEffectEnd);
+		PaperBurnEffectTimelineComponent->SetTimelineFinishedFunc(EndDelegate);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -98,14 +112,15 @@ float ABasicPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AC
 
 	if (StatusComponent->IsDie() && !CharacterData->DieMontage.IsEmpty())
 	{
-		if (Controller)
+		PlayerController = Cast<APlayerController>(Controller);
+		if (PlayerController)
 		{
-			Controller->Destroy();
+			PlayerController->DisableInput(PlayerController);
 		}
 		SetActorEnableCollision(false);
 
 		const int64 Index = FMath::RandRange(0, CharacterData->DieMontage.Num() - 1);
-		UAnimMontage* CurrentDieMontage = CharacterData->DieMontage[Index];
+		CurrentDieMontage = CharacterData->DieMontage[Index];
 
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		AnimInstance->Montage_Play(CurrentDieMontage);
@@ -120,6 +135,35 @@ float ABasicPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AC
 	}
 
 	return 0.0f;
+}
+
+void ABasicPlayer::OnPaperBurnEffect(float InDissolve)
+{
+	const int32 MaterialNum = MaterialInstanceDynamics.Num();
+	for (int32 i = 0; i < MaterialNum; ++i)
+	{
+		MaterialInstanceDynamics[i]->SetScalarParameterValue(MF_PostEffect::PaperBurnDissolve, InDissolve);
+	}
+}
+
+void ABasicPlayer::OnPaperBurnEffectEnd()
+{
+	Destroy();
+}
+
+void ABasicPlayer::OnDie()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Pause(CurrentDieMontage);
+
+	const int32 MaterialNum = GetMesh()->GetSkinnedAsset()->GetMaterials().Num();
+	MaterialInstanceDynamics.Reserve(MaterialNum);
+	for (int32 i = 0; i < MaterialNum; ++i)
+	{
+		MaterialInstanceDynamics.Add(GetMesh()->CreateDynamicMaterialInstance(i));
+	}
+
+	PaperBurnEffectTimelineComponent->Play();
 }
 
 void ABasicPlayer::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
@@ -227,5 +271,16 @@ void ABasicPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+float ABasicPlayer::GetMeleeDamage()
+{
+	float Damage = 0.0f;
+	if (StatusComponent)
+	{
+		Damage = StatusComponent->GetCharacterStatus().MeleeAttackPoint;
+	}
+
+	return Damage;
 }
 

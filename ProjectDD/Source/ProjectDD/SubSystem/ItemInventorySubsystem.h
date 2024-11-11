@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Enum/WeaponType.h"
+#include "Actors/Items/Environment/UsableActor.h"
 
 #include "ItemInventorySubsystem.generated.h"
 
@@ -21,6 +22,8 @@ public:
 
 	FDataTableRowHandle FindItem(const FName& InKey);
 	FDataTableRowHandle FindItemByType(const EWeaponType InWeaponType);
+
+	void AddItem(const AUsableActor& InUsableActor);
 
 protected:
 	UDataTable* WeaponDataTable;

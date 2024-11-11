@@ -7,6 +7,7 @@
 #include "Misc/Utils.h"
 
 #include "Actors/Enemy/BasicEnemy.h"
+#include "Actors/Player/BasicPlayer.h"
 
 UAnimNotify_MeleeAttack::UAnimNotify_MeleeAttack()
 {
@@ -29,7 +30,11 @@ void UAnimNotify_MeleeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 	check(OwningPawn);
 	ABasicEnemy* Enemy = Cast<ABasicEnemy>(OwningPawn);
 
+	ABasicPlayer* Player = Cast<ABasicPlayer>(OwningPawn);
+
 	const FName ProfileName = Enemy ? CollisionProfileName::Enemy : CollisionProfileName::Player;
+
+	const float Damage = Enemy ? Enemy->GetMeleeDamage() : Player->GetMeleeDamage();
 
 	TArray<AActor*> IgnoreActors;
 	FHitResult HitResult;
@@ -39,7 +44,7 @@ void UAnimNotify_MeleeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 		HitResult, true))
 	{
 		AActor* DamagedActor = HitResult.GetActor();
-		UGameplayStatics::ApplyDamage(DamagedActor, 2.f, OwningPawn->GetController(),
+		UGameplayStatics::ApplyDamage(DamagedActor, Damage, OwningPawn->GetController(),
 			OwningPawn, nullptr);
 	}
 }
