@@ -45,6 +45,15 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void OnConstruction(const FTransform& Transform);
 
+	UFUNCTION()
+	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+		
+
 protected:
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -63,6 +72,11 @@ public:
 
 public:
 	virtual float GetMeleeDamage();
+
+public:
+	TArray<AActor*> GetNearbyEnemies() { return NearbyEnemies; }
+
+	bool IsKnifeEnemy() { return EnemyData->WeaponType == EWeaponType::WT_Knife; }
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -85,6 +99,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UAISenseConfig_Sight* AISenseConfig_Sight;
 
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
+	USphereComponent* ProximitySphere;
+
 	UPROPERTY(VisibleAnywhere)
 	UTimelineComponent* PaperBurnEffectTimelineComponent;
 	TArray<UMaterialInstanceDynamic*> MaterialInstanceDynamics;
@@ -100,4 +117,8 @@ protected:
 	FPawnTableRow* EnemyData;
 
 	UAnimMontage* CurrentDieMontage;
+
+protected:
+	UPROPERTY()
+	TArray<AActor*> NearbyEnemies;
 };

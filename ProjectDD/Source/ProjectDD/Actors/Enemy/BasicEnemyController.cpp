@@ -38,10 +38,13 @@ void ABasicEnemyController::Tick(float DeltaTime)
 
 	if (!bDamaged)
 	{
-		FindEnemyByPerception();
 		FindPlayerByPerception();
 	}
 
+	// Knife가 아니면 원거리 공격 할 수있게
+	ABasicEnemy* OwningEnemy = Cast<ABasicEnemy>(OwningPawn);
+	const bool bIsKnife = OwningEnemy->IsKnifeEnemy();
+	Blackboard->SetValueAsBool(TEXT("IsKnife"), bIsKnife);
 }
 
 void ABasicEnemyController::OnDamaged(float CurrentHP, float MaxHP)
@@ -59,28 +62,24 @@ void ABasicEnemyController::ResetOnDamaged()
 	bDamaged = false;
 }
 
-void ABasicEnemyController::FindEnemyByPerception()
+void ABasicEnemyController::FindEnemyByPerception(AActor* InNearbyEnemy)
 {
-	APawn* OwningPawn = GetPawn();
-	if (UAIPerceptionComponent* AIPerceptionComponent = OwningPawn->GetComponentByClass<UAIPerceptionComponent>())
-	{
-		TArray<AActor*> OutActors;
-		AIPerceptionComponent->GetCurrentlyPerceivedActors(UAISenseConfig_Sight::StaticClass(), OutActors);
+	if (!Blackboard)
+		return;
 
-		bool bFound = false;
-		for (AActor* It : OutActors)
-		{
-			if (ABasicEnemy* DetectedEnemy = Cast<ABasicEnemy>(It))
-			{
-				bFound = true;
-				Blackboard->SetValueAsObject(TEXT("CheckEnemy"), Cast<UObject>(DetectedEnemy));
-				break;
-			}
-		}
-		if (!bFound)
-		{
-			Blackboard->ClearValue(TEXT("CheckEnemy"));
-		}
+	if (InNearbyEnemy)
+	{
+		Blackboard->SetValueAsObject(TEXT("CheckEnemy"), Cast<UObject>(InNearbyEnemy));
+	}
+}
+
+void ABasicEnemyController::EraseEnemyByPerception(AActor* InNearbyEnemy)
+{
+	if (!Blackboard)
+		return;
+	if (InNearbyEnemy)
+	{
+		Blackboard->ClearValue(TEXT("CheckEnemy"));
 	}
 }
 

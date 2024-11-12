@@ -32,8 +32,11 @@ protected:
 	UFUNCTION()
 	void ResetOnDamaged();
 
-	void FindEnemyByPerception();
 	void FindPlayerByPerception();
+
+public:
+	void FindEnemyByPerception(AActor* InNearbyEnemy);
+	void EraseEnemyByPerception(AActor* InNearbyEnemy);
 
 public:
 	void SetPatrolPath(TObjectPtr<USplineComponent> NewPathFinder);

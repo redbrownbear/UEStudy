@@ -32,11 +32,16 @@ protected: // InputAction callback
 
     void EndMotion();
 
+public:
     UFUNCTION(BlueprintCallable)
     virtual void Attack();
     UFUNCTION(BlueprintCallable)
-    virtual void ResetAttack();
+    virtual void ResetAttack() { bCanfire = true; }
 
+    void SetAttackLoction(FVector Location) { TargetLocation = Location; }
+    FVector GetAttackLocation() { return TargetLocation; }
+
+protected:
     UFUNCTION()
     virtual void OnMontageEnd(UAnimMontage* Montage, bool bInterrupted) {};
 
@@ -81,4 +86,5 @@ protected: // Input
 //변수
 protected:
     bool bCanfire = true;
+    FVector TargetLocation;
 };

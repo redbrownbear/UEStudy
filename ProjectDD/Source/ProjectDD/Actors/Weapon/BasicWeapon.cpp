@@ -159,11 +159,6 @@ void ABasicWeapon::Attack()
 	}
 }
 
-void ABasicWeapon::ResetAttack()
-{
-	bCanfire = true;
-}
-
 void ABasicWeapon::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);

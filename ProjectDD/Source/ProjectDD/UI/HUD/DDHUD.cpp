@@ -10,9 +10,9 @@ void ADDHUD::AddUsableActor(AUsableActor* NewActor)
 	Widget->AddUsableActor(NewActor);
 }
 
-void ADDHUD::RemoveUseActor(AUsableActor* NewActor)
+void ADDHUD::RemoveUseActor()
 {
-	Widget->RemoveUseActor(NewActor);
+	Widget->RemoveUseActor();
 }
 
 void ADDHUD::RemoveUsableActorsAll()

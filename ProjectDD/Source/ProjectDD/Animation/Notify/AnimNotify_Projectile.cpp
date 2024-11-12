@@ -9,6 +9,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Data//WeaponData.h"
+#include "Actors/Enemy/BasicEnemy.h"
 
 #include "Misc/Utils.h"
 
@@ -67,6 +68,12 @@ void UAnimNotify_Projectile::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 	FVector StartLocation = MuzzleTransform.GetLocation();
 	FVector EndLocation = StartLocation + (MuzzleTransform.GetRotation().Vector() * 10000.0f);
+
+	//AI 전용
+	if(ABasicEnemy* BasicEnemy = Cast<ABasicEnemy>(OwningPawn))
+	{
+		EndLocation = WeaponActor->GetAttackLocation();
+	}
 
 	FRotator ProjectileRotator = FRotator::ZeroRotator;
 	ProjectileRotator = GetPlayerProjectileRotation(StartLocation, EndLocation);

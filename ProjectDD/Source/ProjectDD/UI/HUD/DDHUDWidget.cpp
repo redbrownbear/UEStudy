@@ -39,9 +39,15 @@ void UDDHUDWidget::AddUsableActor(AUsableActor* NewActor)
 	}
 }
 
-void UDDHUDWidget::RemoveUseActor(AUsableActor* NewActor)
+void UDDHUDWidget::RemoveUseActor()
 {
+	if (AUsableActorDescVerticalBox->GetChildAt(0) == nullptr)
+		return;
 
+	if (UUserWidget* ActorDescWidget = CreateWidget<UUserWidget>(GetWorld(), ActorDescWidgetClass))
+	{
+		AUsableActorDescVerticalBox->RemoveChildAt(0);
+	}
 }
 
 void UDDHUDWidget::RemoveUsableActorsAll()

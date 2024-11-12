@@ -79,7 +79,7 @@ void ABasicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	if (!bFromSweep)
 	{
 		Destroy();
-		check(false);
+		//check(false);
 		return;
 	}
 

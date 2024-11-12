@@ -10,7 +10,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Animation/BaisicCharacterAnimInstance.h"
 #include "AIController.h"
+#include "Enum/WeaponType.h"
 #include "PawnData.generated.h"
+
 
 USTRUCT()
 struct PROJECTDD_API FPawnTableRow : public FTableRowBase
@@ -66,4 +68,8 @@ public: //(Enemy만 적용)
 
 	UPROPERTY(EditAnywhere, Category = "Enemy", meta = (RowType = "/Script/ProjectDD.WeaponTableRow"))
 	FDataTableRowHandle Weapon;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy")
+	EWeaponType WeaponType;
+	
 };

@@ -61,6 +61,9 @@ void AWeapnRiffle::OnAim()
 
 void AWeapnRiffle::EndAim()
 {
+	if (!SpringArm)
+		return;
+
 	SpringArm->OnEndAiming();
 	OwnerStatusComponent->SetAim(false);
 	ParticleSystemComponent->DeactivateImmediate();

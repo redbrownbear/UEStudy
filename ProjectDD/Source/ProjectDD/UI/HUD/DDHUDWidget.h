@@ -27,7 +27,7 @@ protected:
 
 public:
 	void AddUsableActor(AUsableActor* NewActor);
-	void RemoveUseActor(AUsableActor* NewActor);
+	void RemoveUseActor();
 	void RemoveUsableActorsAll();
 
 public:

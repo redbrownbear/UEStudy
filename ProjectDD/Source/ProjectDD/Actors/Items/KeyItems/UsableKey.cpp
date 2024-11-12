@@ -14,6 +14,6 @@ void AUsableKey::OnItemUse(bool isUsable)
 		return;
 	}
 
-	Destroy();
 	HUDManager->RemoveUnUsebleActor(this);
+	Destroy();
 }

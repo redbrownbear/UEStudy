@@ -31,7 +31,7 @@ void UHUDManagerSubsystem::RemoveUnUsebleActor(AUsableActor* InUnUsableActors)
         return;
 
     OverlappedUsableActor.Remove(InUnUsableActors);
-    HUD->RemoveUseActor(InUnUsableActors);
+    HUD->RemoveUseActor();
 }
 
 void UHUDManagerSubsystem::RemoveAllUsableActor()

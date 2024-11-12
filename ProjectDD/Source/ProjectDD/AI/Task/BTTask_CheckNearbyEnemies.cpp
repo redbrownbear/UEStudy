@@ -15,7 +15,7 @@
 UBTTask_CheckNearbyEnemies::UBTTask_CheckNearbyEnemies()
 {
 	NodeName = TEXT("Check Nearby Enemies");
-	DistanceThreshold = 100.f;
+	DistanceThreshold = 250.0f;
 }
 
 EBTNodeResult::Type UBTTask_CheckNearbyEnemies::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -42,22 +42,23 @@ EBTNodeResult::Type UBTTask_CheckNearbyEnemies::AvoidNearbyEnemies(UBehaviorTree
 
     FVector ActorLocation = OwnerActor->GetActorLocation();
 
-    UObject* CheckEnemy = BlackboardComponent->GetValueAsObject(TEXT("CheckEnemy"));
-    if (IsValid(CheckEnemy))
+    ABasicEnemy* Enemy = Cast<ABasicEnemy>(OwnerActor);
+    if (Enemy)
     {
-        ACharacter* Enemy = Cast<ACharacter>(CheckEnemy);
-        if (Enemy)
+        for (AActor* NearbyEnemy : Enemy->GetNearbyEnemies())
         {
-            float Distance = FVector::Dist(ActorLocation, Enemy->GetActorLocation());
+            float Distance = FVector::Dist(ActorLocation, NearbyEnemy->GetActorLocation());
             if (Distance < DistanceThreshold)
             {
-                FVector AvoidDirection = (ActorLocation - Enemy->GetActorLocation()).GetSafeNormal();
+                FVector AvoidDirection = (ActorLocation - NearbyEnemy->GetActorLocation()).GetSafeNormal();
                 FVector NewLocation = ActorLocation + (AvoidDirection * DistanceThreshold);
 
                 APawn* Pawn = OwnerComp.GetAIOwner()->GetPawn();
                 Proxy = UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, Pawn, NewLocation);
                 Proxy->OnSuccess.AddDynamic(this, &ThisClass::OnResult);
                 Proxy->OnFail.AddDynamic(this, &ThisClass::OnResult);
+
+                EBTNodeResult::InProgress;
             }
         }
     }
