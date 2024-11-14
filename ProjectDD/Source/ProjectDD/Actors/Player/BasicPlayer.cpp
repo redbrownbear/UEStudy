@@ -3,6 +3,7 @@
 
 #include "BasicPlayer.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "SubSystem/HUDManagerSubsystem.h"
 
 // Sets default values
 ABasicPlayer::ABasicPlayer()
@@ -153,6 +154,13 @@ void ABasicPlayer::OnPaperBurnEffectEnd()
 
 void ABasicPlayer::OnDie()
 {
+	UHUDManagerSubsystem* HUDManager = GetWorld()->GetGameInstance()->GetSubsystem<UHUDManagerSubsystem>();
+	if (!HUDManager)
+	{
+		check(false);
+		return;
+	}
+
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->Montage_Pause(CurrentDieMontage);
 
@@ -164,6 +172,8 @@ void ABasicPlayer::OnDie()
 	}
 
 	PaperBurnEffectTimelineComponent->Play();
+
+	HUDManager->ShowDie();
 }
 
 void ABasicPlayer::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
@@ -203,9 +213,9 @@ void ABasicPlayer::SetMoveSpeed(const bool IsRun)
 	}
 }
 
-void ABasicPlayer::FireProjectile(int32 InCount)
+void ABasicPlayer::FireProjectile(EWeaponType InWeaponType, int32 InCount)
 {
-	StatusComponent->ProjectileFire(GetController(), InCount, 100);
+	StatusComponent->ProjectileFire(GetController(), InWeaponType, InCount);
 }
 
 void ABasicPlayer::SwitchWeaponAnim(EWeaponType NewWeapon)

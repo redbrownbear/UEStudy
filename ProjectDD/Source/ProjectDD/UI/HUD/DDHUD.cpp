@@ -25,6 +25,21 @@ void ADDHUD::SetStatus(FPawnStatusTableRow Status)
 	Widget->UpdateStatus(Status);
 }
 
+void ADDHUD::ShowEmergencyStatus(const FString& Message)
+{
+	float Duration = 3.0f;
+	Widget->ShowEmergencyMessage(Message, Duration);
+}
+
+void ADDHUD::ShowDie()
+{	
+	UClass* WidgetClass = LoadClass<UUserWidget>(nullptr,
+		TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/UI/UI_PlayerDie.UI_PlayerDie_C'"));
+	check(WidgetClass);
+	UUserWidget* otherWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+	otherWidget->AddToViewport();
+}
+
 void ADDHUD::BeginPlay()
 {
 	Super::BeginPlay();

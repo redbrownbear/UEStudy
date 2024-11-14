@@ -32,4 +32,11 @@ private:
 	UTextBlock* Bullet9mTextBlock;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* GrenadeTextBlock;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* YellowKeyTextBlock;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* BlueKeyTextBlock;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* RedKeyTextBlock;
+
 };

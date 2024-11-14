@@ -34,6 +34,9 @@ public:
 	void SetStatus(FPawnStatusTableRow Status);
 	void DrawStatusUI();
 
+	void ShowEmergencyMessage(const FString& Message);
+	void ShowDie();
+
 private:
 	ADDHUD* HUD;
 	TArray<AUsableActor*> OverlappedUsableActor;

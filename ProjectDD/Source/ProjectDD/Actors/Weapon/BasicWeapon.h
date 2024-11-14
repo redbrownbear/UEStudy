@@ -10,6 +10,8 @@
 #include "Components/SoftWheelSpringArmComponent.h"
 #include "Data/WeaponData.h"
 #include "Misc/Utils.h"
+#include "Actors/Player/BasicPlayer.h"
+
 #include "BasicWeapon.generated.h"
 
 
@@ -25,6 +27,8 @@ public:
     virtual void SetData(const FDataTableRowHandle& InDataTableRowHandle);
 
     const FWeaponTableRow* GetWeaponTableRow() const { return WeaponTableRow; }
+
+    const EWeaponType GetWeaponType() { return WeaponTableRow->WeaponType; }
 
 protected: // InputAction callback
     void OnFire(const FInputActionValue& InputActionValue);

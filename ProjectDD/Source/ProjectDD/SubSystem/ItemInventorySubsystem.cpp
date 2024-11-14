@@ -56,7 +56,36 @@ FDataTableRowHandle UItemInventorySubsystem::FindItemByType(const EWeaponType We
 	return DataTableRowHandle;
 }
 
-void UItemInventorySubsystem::AddItem(const AUsableActor& InUsableActor)
+void UItemInventorySubsystem::AddItem(FUsableActorTableRow InUsableActor)
 {
+	//값복사로의 관리를 피하기 위함
 
+	TUniquePtr<FUsableActorTableRow> tempActor = MakeUnique<FUsableActorTableRow>(InUsableActor);
+	arrUsableActor.Add(MoveTemp(tempActor));
+}
+
+void UItemInventorySubsystem::RemoveItem(FUsableActorTableRow* InUsableActor)
+{
+	for (int32 i = 0; i < arrUsableActor.Num(); ++i)
+	{
+		// Get()을 사용하여 내부 데이터를 비교
+		if (arrUsableActor[i].Get() == InUsableActor)
+		{
+			arrUsableActor.RemoveAt(i);
+			break;
+		}
+	}
+}
+
+const FUsableActorTableRow* UItemInventorySubsystem::GetKeyByType(EKeyItemType InType) const
+{
+	for (const TUniquePtr<FUsableActorTableRow>& Actor : arrUsableActor)
+	{
+		if (InType == Actor->KeyItemType)
+		{
+			return Actor.Get();
+		}
+	}
+
+	return nullptr;
 }

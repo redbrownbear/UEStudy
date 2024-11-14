@@ -14,6 +14,14 @@ void AUsableKey::OnItemUse(bool isUsable)
 		return;
 	}
 
+	UItemInventorySubsystem* InvenSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UItemInventorySubsystem>();
+	if (!InvenSubsystem)
+	{
+		return;
+	}
+
+	InvenSubsystem->AddItem(ActorData);
 	HUDManager->RemoveUnUsebleActor(this);
+	HUDManager->DrawStatusUI();
 	Destroy();
 }

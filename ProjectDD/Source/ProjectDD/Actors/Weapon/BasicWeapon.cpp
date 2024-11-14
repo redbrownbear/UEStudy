@@ -2,7 +2,6 @@
 
 
 #include "Actors/Weapon/BasicWeapon.h"
-#include "Actors/Player/BasicPlayer.h"
 #include "Actors/PlayerController/BasicPlayerController.h"
 
 // Sets default values

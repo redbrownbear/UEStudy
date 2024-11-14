@@ -49,3 +49,13 @@ void UHUDManagerSubsystem::DrawStatusUI()
 {
     HUD->SetStatus(PlayerStatusData);
 }
+
+void UHUDManagerSubsystem::ShowEmergencyMessage(const FString& Message)
+{
+    HUD->ShowEmergencyStatus(Message);
+}
+
+void UHUDManagerSubsystem::ShowDie()
+{
+    HUD->ShowDie();
+}

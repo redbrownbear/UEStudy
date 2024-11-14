@@ -25,6 +25,10 @@ public:
 
 public:
 	void SetStatus(FPawnStatusTableRow Status);
+
+	void ShowEmergencyStatus(const FString& Message);
+
+	void ShowDie();
 	
 protected:
 	virtual void BeginPlay() override;

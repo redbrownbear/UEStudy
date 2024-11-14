@@ -38,7 +38,7 @@ public:
 	void SpawnData(const FDataTableRowHandle& InDataTableRowHandle, const FName& enemyName);
 	void InitPathFinder();
 
-	virtual void FireProjectile(int32 InCount);
+	virtual void FireProjectile(EWeaponType InWeaponType, int32 InCount);
 
 protected:
 	// Called when the game starts or when spawned

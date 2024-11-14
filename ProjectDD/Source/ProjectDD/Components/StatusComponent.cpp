@@ -43,7 +43,8 @@ void UStatusComponent::SetStatus(FDataTableRowHandle InDataTableRowHandle)
 
 	CharacterStatus = Status;
 
-	HUDManager->SetStatus(CharacterStatus);
+	if(IsPlayer())
+		HUDManager->SetStatus(CharacterStatus);
 }
 
 void UStatusComponent::SetUI()
@@ -107,7 +108,7 @@ float UStatusComponent::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	return NewDamage;
 }
 
-void UStatusComponent::ProjectileFire(AController* EventInstigator, int32 BulletCount, int32 BulletMaxCount)
+void UStatusComponent::ProjectileFire(AController* EventInstigator, EWeaponType InWeaponType, int32 BulletCount)
 {
 	UHUDManagerSubsystem* HUDManager = GetWorld()->GetGameInstance()->GetSubsystem<UHUDManagerSubsystem>();
 	if (!HUDManager)
@@ -115,8 +116,15 @@ void UStatusComponent::ProjectileFire(AController* EventInstigator, int32 Bullet
 		check(false);
 		return;
 	}
+	if (InWeaponType == EWeaponType::WT_Rifle)
+	{
+		CharacterStatus.BulletCount556mm -= BulletCount;
+	}
+	else if (InWeaponType == EWeaponType::WT_Pistol)
+	{
+		CharacterStatus.BulletCount9mm -= BulletCount;
+	}
 
-	CharacterStatus.BulletCount556mm -= BulletCount;
 	SetUI();
 }
 

@@ -121,9 +121,9 @@ void ABasicEnemy::InitPathFinder()
 	}
 }
 
-void ABasicEnemy::FireProjectile(int32 InCount)
+void ABasicEnemy::FireProjectile(EWeaponType InWeaponType, int32 InCount)
 {
-	StatusComponent->ProjectileFire(GetController(), InCount, 100);
+	StatusComponent->ProjectileFire(GetController(), InWeaponType, InCount);
 }
 
 // Called when the game starts or when spawned

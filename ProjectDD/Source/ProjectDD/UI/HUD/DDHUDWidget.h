@@ -30,6 +30,10 @@ public:
 	void RemoveUseActor();
 	void RemoveUsableActorsAll();
 
+	UFUNCTION(BlueprintCallable)
+	void ShowEmergencyMessage(const FString& Message, float Duration);
+	void RemoveEmergencyMessage();
+
 public:
 	void UpdateStatus(FPawnStatusTableRow Status);
 
@@ -38,8 +42,17 @@ protected:
 	TSubclassOf<UUserWidget> ActorDescWidgetClass = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> StatusDescWidgetClass = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	UVerticalBox* AUsableActorDescVerticalBox = nullptr;	
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	UVerticalBox* AStatusDescVerticalBox = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	UUI_PlayerStatus* UIPlayerStatClass = nullptr;
+
+protected:
+	FTimerHandle MessageTimerHandle;
 };

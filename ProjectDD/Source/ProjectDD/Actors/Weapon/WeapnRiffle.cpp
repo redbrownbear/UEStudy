@@ -3,6 +3,7 @@
 
 #include "Actors/Weapon/WeapnRiffle.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "SubSystem/HUDManagerSubsystem.h"
 
 void AWeapnRiffle::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 {
@@ -24,6 +25,19 @@ void AWeapnRiffle::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 
 void AWeapnRiffle::Attack()
 {
+	if (OwnerStatusComponent->Is556BulletEmpty() && OwningPawn->IsA(ABasicPlayer::StaticClass()))
+	{
+		UHUDManagerSubsystem* HUDManager = GetWorld()->GetGameInstance()->GetSubsystem<UHUDManagerSubsystem>();
+		if (!HUDManager)
+		{
+			check(false);
+			return;
+		}
+
+		HUDManager->ShowEmergencyMessage(TEXT("라이플 총알이 부족합니다."));
+		return;
+	}
+	
 	Super::Attack();
 
 	bCanfire = true;

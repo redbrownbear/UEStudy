@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Data/PawnStatusData.h"
+#include "Enum/WeaponType.h"
 
 #include "StatusComponent.generated.h"
 
@@ -36,6 +37,10 @@ public:
 	void SetAttack(const bool bFlag) { bAttack = bFlag; }
 	bool CanMove() const { return !bAttack && !bDie; }
 
+	bool Is556BulletEmpty() { return CharacterStatus.BulletCount556mm <= 0; }
+	bool Is9BulletEmpty() { return CharacterStatus.BulletCount9mm <= 0; }
+
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -46,7 +51,7 @@ public:
 
 public:
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
-	void ProjectileFire(AController* EventInstigator, int32 BulletCount, int32 BulletMaxCount);
+	void ProjectileFire(AController* EventInstigator, EWeaponType InWeaponType, int32 BulletCount);
 
 	const FPawnStatusTableRow& GetCharacterStatus() { return CharacterStatus; }
 

@@ -55,7 +55,7 @@ public:
 	virtual void SwitchWeaponAnim(EWeaponType NewWeapon);	//컨트롤러에서 무기를 바꿔주기 위함	
 	virtual void SetMoveSpeed(const bool IsRun);			//Shift키로 moveSpeed 변경
 
-	virtual void FireProjectile(int32 InCount);
+	virtual void FireProjectile(EWeaponType InWeaponType, int32 InCount);
 
 private:
 	int32 GetWeaponAnimIdx(EWeaponType InWeapon);

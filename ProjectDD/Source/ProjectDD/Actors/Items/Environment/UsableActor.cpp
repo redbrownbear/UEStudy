@@ -22,7 +22,7 @@ AUsableActor::AUsableActor()
 
 void AUsableActor::OnItemUse(bool isUse)
 {
-	//기능구현
+
 }
 
 FText AUsableActor::GetUseActionText()

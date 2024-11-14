@@ -48,18 +48,18 @@ void ABasicProjectile::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 	StaticMeshComponent->MoveIgnoreActors.Add(GetOwner());
 }
 
-void ABasicProjectile::ProjectileFire(APawn* InOwner, int32 InCount)
+void ABasicProjectile::ProjectileFire(APawn* InOwner, EWeaponType InWeaponType, int32 InCount)
 {
 	ABasicEnemy* Enemy = Cast<ABasicEnemy>(InOwner);
 	if (Enemy)
 	{
-		Enemy->FireProjectile(InCount);
+		Enemy->FireProjectile(InWeaponType, InCount);
 	}
 
 	ABasicPlayer* Player = Cast<ABasicPlayer>(InOwner);
 	if (Player)
 	{
-		Player->FireProjectile(InCount);
+		Player->FireProjectile(InWeaponType, InCount);
 	}
 }
 

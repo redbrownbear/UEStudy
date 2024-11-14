@@ -3,6 +3,7 @@
 
 #include "Actors/Weapon/WeaponPistol.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "SubSystem/HUDManagerSubsystem.h"
 
 void AWeaponPistol::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 {
@@ -20,6 +21,24 @@ void AWeaponPistol::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 	ParticleSystemComponent->DeactivateImmediate();
 
 	EndAim();
+}
+
+void AWeaponPistol::Attack()
+{
+	if (OwnerStatusComponent->Is9BulletEmpty() && OwningPawn->IsA(ABasicPlayer::StaticClass()))
+	{
+		UHUDManagerSubsystem* HUDManager = GetWorld()->GetGameInstance()->GetSubsystem<UHUDManagerSubsystem>();
+		if (!HUDManager)
+		{
+			check(false);
+			return;
+		}
+
+		HUDManager->ShowEmergencyMessage(TEXT("권총 총알이 부족합니다."));
+		return;
+	}
+
+	Super::Attack();
 }
 
 void AWeaponPistol::OnAim()

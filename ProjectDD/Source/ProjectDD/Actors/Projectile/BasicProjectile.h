@@ -7,6 +7,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Data/ProjectileData.h"
+#include "Enum/WeaponType.h"
 #include "BasicProjectile.generated.h"
 
 UCLASS()
@@ -19,7 +20,7 @@ public:
 	ABasicProjectile();
 	virtual void SetData(const FDataTableRowHandle& InDataTableRowHandle);
 
-	void ProjectileFire(APawn* InOwner, int32 InCount);
+	void ProjectileFire(APawn* InOwner, EWeaponType InWeaponType, int32 InCount);
 
 protected:
 	// Called when the game starts or when spawned

@@ -16,6 +16,7 @@ class PROJECTDD_API AWeaponPistol : public ABasicWeapon
 
 private:
 	virtual void SetData(const FDataTableRowHandle& InDataTableRowHandle) override;
+	virtual void Attack() override;
 	virtual void OnAim();
 	virtual void EndAim();
 
