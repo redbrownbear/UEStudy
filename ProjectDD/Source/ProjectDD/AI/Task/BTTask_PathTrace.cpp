@@ -22,10 +22,8 @@ EBTNodeResult::Type UBTTask_PathTrace::ExecuteTask(UBehaviorTreeComponent& Owner
 	check(SplineComponent);
 
 	SplinePoints = SplineComponent->GetNumberOfSplinePoints();
-	CurrentPatrolIndex = BlackboardComponent->GetValueAsInt(TEXT("PatrolIndex"));
-	CurrentPatrolIndex = FMath::RandRange(0, SplinePoints);
-
-	const FVector TargetLocation = SplineComponent->GetLocationAtSplinePoint(CurrentPatrolIndex, ESplineCoordinateSpace::World);
+	const int32 Index = FMath::RandRange(0, SplinePoints - 1);
+	const FVector TargetLocation = SplineComponent->GetLocationAtSplinePoint(Index, ESplineCoordinateSpace::World);
 
 	APawn* Pawn = AIOwner->GetPawn();
 	Proxy = UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, Pawn, TargetLocation);
@@ -55,9 +53,8 @@ void UBTTask_PathTrace::OnResult(EPathFollowingResult::Type MovementResult)
 	}
 	if (MovementResult == EPathFollowingResult::Success)
 	{
-		++CurrentPatrolIndex;
-		CurrentPatrolIndex = CurrentPatrolIndex % SplinePoints;
-		BlackboardComponent->SetValueAsInt(TEXT("PatrolIndex"), CurrentPatrolIndex);
+		const int32 Index = FMath::RandRange(0, SplinePoints - 1);
+		BlackboardComponent->SetValueAsInt(TEXT("PatrolIndex"), Index);
 	}
 
 	FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Succeeded);

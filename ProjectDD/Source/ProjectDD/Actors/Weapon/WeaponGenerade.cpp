@@ -13,7 +13,19 @@ void AWeaponGenerade::OnMontageEnd(UAnimMontage* Montage, bool bInterrupted)
 
 void AWeaponGenerade::Attack()
 {
-	Super::Attack();
+	if (OwnerStatusComponent->Is9BulletEmpty() && OwningPawn->IsA(ABasicPlayer::StaticClass()))
+	{
+		UHUDManagerSubsystem* HUDManager = GetWorld()->GetGameInstance()->GetSubsystem<UHUDManagerSubsystem>();
+		if (!HUDManager)
+		{
+			check(false);
+			return;
+		}
 
+		HUDManager->ShowEmergencyMessage(TEXT("수류탄이 부족합니다."));
+		return;
+	}
+
+	Super::Attack();
 	OwnerStatusComponent->SetAttack(true);
 }

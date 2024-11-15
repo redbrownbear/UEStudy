@@ -20,15 +20,12 @@ UBTTask_CheckNearbyEnemies::UBTTask_CheckNearbyEnemies()
 
 EBTNodeResult::Type UBTTask_CheckNearbyEnemies::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-    // 현재 AI 컨트롤러 가져오기
-    AAIController* AIController = OwnerComp.GetAIOwner();
-    if (!AIController)
-    {
-        return EBTNodeResult::Failed;
-    }
-
     BehaviorTreeComponent = &OwnerComp;
     BlackboardComponent = OwnerComp.GetBlackboardComponent();
+    SplineComponent = Cast<USplineComponent>(BlackboardComponent->GetValueAsObject(TEXT("SplineComponent")));
+    check(SplineComponent);
+
+    SplinePoints = SplineComponent->GetNumberOfSplinePoints();
 
     // 적들을 피하기 위한 함수 호출
     return AvoidNearbyEnemies(OwnerComp);
@@ -36,14 +33,13 @@ EBTNodeResult::Type UBTTask_CheckNearbyEnemies::ExecuteTask(UBehaviorTreeCompone
 
 EBTNodeResult::Type UBTTask_CheckNearbyEnemies::AvoidNearbyEnemies(UBehaviorTreeComponent& OwnerComp)
 {
-    // AI의 위치 가져오기
     AActor* OwnerActor = OwnerComp.GetAIOwner()->GetPawn();
     if (!OwnerActor) return EBTNodeResult::Failed;
 
     FVector ActorLocation = OwnerActor->GetActorLocation();
 
     ABasicEnemy* Enemy = Cast<ABasicEnemy>(OwnerActor);
-    if (Enemy)
+    if (Enemy && !bAvoiding)
     {
         for (AActor* NearbyEnemy : Enemy->GetNearbyEnemies())
         {
@@ -51,14 +47,14 @@ EBTNodeResult::Type UBTTask_CheckNearbyEnemies::AvoidNearbyEnemies(UBehaviorTree
             if (Distance < DistanceThreshold)
             {
                 FVector AvoidDirection = (ActorLocation - NearbyEnemy->GetActorLocation()).GetSafeNormal();
-                FVector NewLocation = ActorLocation + (AvoidDirection * DistanceThreshold);
+                FVector TargetLocation = ActorLocation + (AvoidDirection * 1000.0f);
 
-                APawn* Pawn = OwnerComp.GetAIOwner()->GetPawn();
-                Proxy = UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, Pawn, NewLocation);
+                Proxy = UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, Enemy, TargetLocation);
                 Proxy->OnSuccess.AddDynamic(this, &ThisClass::OnResult);
                 Proxy->OnFail.AddDynamic(this, &ThisClass::OnResult);
 
-                EBTNodeResult::InProgress;
+                bAvoiding = true;
+                return EBTNodeResult::InProgress;
             }
         }
     }
@@ -68,9 +64,9 @@ EBTNodeResult::Type UBTTask_CheckNearbyEnemies::AvoidNearbyEnemies(UBehaviorTree
 
 void UBTTask_CheckNearbyEnemies::OnResult(EPathFollowingResult::Type MovementResult)
 {
-    if (!IsValid(Proxy))
+    if (MovementResult == EPathFollowingResult::Success)
     {
-        return;
+        bAvoiding = false;  // 회피 완료 후 Spline 복귀 가능
     }
 
     FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Succeeded);

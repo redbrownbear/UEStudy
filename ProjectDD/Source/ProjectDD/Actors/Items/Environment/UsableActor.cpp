@@ -2,6 +2,7 @@
 
 
 #include "Actors/Items/Environment/UsableActor.h"
+#include "NavigationSystem.h"
 
 // Sets default values
 AUsableActor::AUsableActor()
@@ -22,7 +23,11 @@ AUsableActor::AUsableActor()
 
 void AUsableActor::OnItemUse(bool isUse)
 {
-
+	UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	if (NavSystem)
+	{
+		NavSystem->Build();
+	}
 }
 
 FText AUsableActor::GetUseActionText()

@@ -4,6 +4,7 @@
 #include "Actors/Spawner/UsableActorSpawner.h"
 #include "Actors/Items/Environment/UsableActor.h"
 #include "SubSystem/EnvironmentManageSubSystem.h"
+#include "NavigationSystem.h"
 
 // Sets default values
 AUsableActorSpawner::AUsableActorSpawner()
@@ -49,5 +50,11 @@ void AUsableActorSpawner::SpawnUsableActor(const FUsableActorTableRow& InSpawnDa
     }
 
     SpawnedActor->SetData(InSpawnData);
+
+    UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+    if (NavSystem)
+    {
+        NavSystem->Build();
+    }
 }
 

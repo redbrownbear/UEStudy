@@ -15,9 +15,6 @@ class PROJECTDD_API UAnimNotify_Projectile : public UAnimNotify
 	GENERATED_BODY()
 
 public:
-	UAnimNotify_Projectile();
-
-public:
 	FRotator GetPlayerProjectileRotation(const FVector& InProjectSpawnLocation, const FVector& InEndLocation);
 
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;

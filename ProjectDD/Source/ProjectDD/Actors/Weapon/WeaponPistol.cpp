@@ -3,7 +3,6 @@
 
 #include "Actors/Weapon/WeaponPistol.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "SubSystem/HUDManagerSubsystem.h"
 
 void AWeaponPistol::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 {

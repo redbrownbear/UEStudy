@@ -36,7 +36,7 @@ public:
 	ABasicEnemy();
 
 	void SpawnData(const FDataTableRowHandle& InDataTableRowHandle, const FName& enemyName);
-	void InitPathFinder();
+	void InitAdditional();
 
 	virtual void FireProjectile(EWeaponType InWeaponType, int32 InCount);
 
@@ -44,15 +44,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void OnConstruction(const FTransform& Transform);
-
-	UFUNCTION()
-	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-		
 
 protected:
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -79,7 +70,7 @@ public:
 	bool IsKnifeEnemy() { return EnemyData->WeaponType == EWeaponType::WT_Knife; }
 
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<APathFinder> PathFinderRef;
 
 protected:
@@ -98,9 +89,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UAISenseConfig_Sight* AISenseConfig_Sight;
-
-	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	USphereComponent* ProximitySphere;
 
 	UPROPERTY(VisibleAnywhere)
 	UTimelineComponent* PaperBurnEffectTimelineComponent;

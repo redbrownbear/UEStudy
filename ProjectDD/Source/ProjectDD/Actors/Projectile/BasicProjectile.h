@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Data/ProjectileData.h"
 #include "Enum/WeaponType.h"
+
 #include "BasicProjectile.generated.h"
 
 UCLASS()

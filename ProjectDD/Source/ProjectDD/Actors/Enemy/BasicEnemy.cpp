@@ -8,7 +8,6 @@
 #include "Actors/Enemy/BasicEnemyController.h"
 #include "PaperSprite.h"
 
-
 // Sets default values
 ABasicEnemy::ABasicEnemy()
 {
@@ -37,23 +36,11 @@ ABasicEnemy::ABasicEnemy()
 		AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
 		AISenseConfig_Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("AISenseConfig_Sight"));
 		AISenseConfig_Sight->DetectionByAffiliation.bDetectNeutrals = true;
-		AISenseConfig_Sight->SightRadius = 800.f;
-		AISenseConfig_Sight->LoseSightRadius = 1000.f;
+		AISenseConfig_Sight->SightRadius = 1500.f;
+		AISenseConfig_Sight->LoseSightRadius = 2000.f;
 		AISenseConfig_Sight->PeripheralVisionAngleDegrees = 120.f;
 		AIPerceptionComponent->ConfigureSense(*AISenseConfig_Sight);
 	}
-	{
-		ProximitySphere = CreateDefaultSubobject<USphereComponent>(TEXT("ProximitySphere"));
-		ProximitySphere->InitSphereRadius(200.0f);  // 적당한 감지 거리 설정
-		ProximitySphere->SetupAttachment(RootComponent);
-		ProximitySphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		ProximitySphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-		ProximitySphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-
-		ProximitySphere->OnComponentBeginOverlap.AddDynamic(this, &ABasicEnemy::OnBeginOverlap);
-		ProximitySphere->OnComponentEndOverlap.AddDynamic(this, &ABasicEnemy::OnEndOverlap);
-	}
-	
 	{
 		static ConstructorHelpers::FObjectFinder<UCurveFloat> CurveAsset(TEXT("/Script/Engine.CurveFloat'/Game/Blueprints/Effect/CV_PaperBurn.CV_PaperBurn'"));
 		check(CurveAsset.Object);
@@ -98,25 +85,37 @@ void ABasicEnemy::SpawnData(const FDataTableRowHandle& InDataTableRowHandle, con
 
 		const float NewCapsuleHalfHeight = Data->CollisionCapsuleHalfHeight * 0.5f;
 		Movement->SetCrouchedHalfHeight(NewCapsuleHalfHeight);
-	}
-	{
-		AIControllerClass = EnemyData->AIControllerClass;
-		Weapon->SetData(EnemyData->Weapon);
+
+		Movement->bUseRVOAvoidance = true;
+		Movement->AvoidanceConsiderationRadius = 200.0f;
+		Movement->AvoidanceWeight = 1.0f;
+		Movement->SetAvoidanceGroup(0);    
 	}
 	{
 		StatusComponent->SetStatus(EnemyData->Status);
+		Weapon->SetData(EnemyData->Weapon);
+
+		AIControllerClass = EnemyData->AIControllerClass;
+
+		// PathFinder를 찾아 연결
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APathFinder::StaticClass(), FoundActors);
+
+		if (FoundActors.Num() > EnemyData->PathfinderNum)
+		{
+			PathFinderRef = Cast<APathFinder>(FoundActors[EnemyData->PathfinderNum]);
+		}
 	}
 }
 
-void ABasicEnemy::InitPathFinder()
+void ABasicEnemy::InitAdditional()
 {
-	PathFinderRef = Cast<APathFinder>(UGameplayStatics::GetActorOfClass(GetWorld(), APathFinder::StaticClass()));
-
 	if (PathFinderRef)
 	{
 		if (ABasicEnemyController* BasicEnemyController = Cast<ABasicEnemyController>(Controller))
 		{
 			BasicEnemyController->SetPatrolPath(PathFinderRef->GetPath());
+			BasicEnemyController->SetBlackBoard();
 		}
 	}
 }
@@ -143,30 +142,6 @@ void ABasicEnemy::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 	SetActorTransform(Transform);
-}
-
-void ABasicEnemy::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (ABasicEnemyController* BasicEnemyController = Cast<ABasicEnemyController>(Controller))
-	{
-		if (OtherActor && OtherActor != this && OtherActor->IsA(ABasicEnemy::StaticClass()))
-		{
-			BasicEnemyController->FindEnemyByPerception(OtherActor);
-			NearbyEnemies.Add(OtherActor);
-		}	
-	}
-}
-
-void ABasicEnemy::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (ABasicEnemyController* BasicEnemyController = Cast<ABasicEnemyController>(Controller))
-	{
-		if (OtherActor && OtherActor != this && OtherActor->IsA(ABasicEnemy::StaticClass()))
-		{
-			BasicEnemyController->EraseEnemyByPerception(OtherActor);
-			NearbyEnemies.Remove(OtherActor);
-		}
-	}
 }
 
 float ABasicEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

@@ -22,12 +22,12 @@ public:
 	UFUNCTION()
 	void OnResult(EPathFollowingResult::Type MovementResult);
 
+protected:
 	UPROPERTY()
 	class UAIAsyncTaskBlueprintProxy* Proxy;
 
 	class UBehaviorTreeComponent* BehaviorTreeComponent = nullptr;
 	class UBlackboardComponent* BlackboardComponent = nullptr;
 	class USplineComponent* SplineComponent = nullptr;
-	int32 CurrentPatrolIndex = 0;
 	int32 SplinePoints = 0;
 };

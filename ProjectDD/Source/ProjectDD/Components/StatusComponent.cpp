@@ -92,6 +92,7 @@ float UStatusComponent::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 	if (CharacterStatus.HP <= 0.f)
 	{
+		CharacterStatus.HP = 0;
 		SetDie(true);
 	}
 		

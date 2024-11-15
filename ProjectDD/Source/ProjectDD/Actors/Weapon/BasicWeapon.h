@@ -8,6 +8,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/StatusComponent.h"
 #include "Components/SoftWheelSpringArmComponent.h"
+#include "SubSystem/HUDManagerSubsystem.h"
 #include "Data/WeaponData.h"
 #include "Misc/Utils.h"
 #include "Actors/Player/BasicPlayer.h"

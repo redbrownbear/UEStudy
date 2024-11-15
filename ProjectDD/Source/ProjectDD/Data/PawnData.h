@@ -11,6 +11,7 @@
 #include "Animation/BaisicCharacterAnimInstance.h"
 #include "AIController.h"
 #include "Enum/WeaponType.h"
+#include "Actors/Enemy/PathFinder.h"
 #include "PawnData.generated.h"
 
 
@@ -71,5 +72,7 @@ public: //(Enemy만 적용)
 
 	UPROPERTY(EditAnywhere, Category = "Enemy")
 	EWeaponType WeaponType;
-	
+
+	UPROPERTY(EditAnywhere, Category = "Enemy")
+	int32 PathfinderNum;//이넘으로 바꾸자...
 };

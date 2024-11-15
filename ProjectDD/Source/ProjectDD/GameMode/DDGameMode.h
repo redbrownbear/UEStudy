@@ -17,5 +17,4 @@ class PROJECTDD_API ADDGameMode : public AGameModeBase
 	//필요한 
 public:
 	virtual void StartPlay() override;
-
 };

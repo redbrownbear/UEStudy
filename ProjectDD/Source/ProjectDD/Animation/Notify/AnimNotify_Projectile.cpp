@@ -14,13 +14,6 @@
 #include "Misc/Utils.h"
 
 
-UAnimNotify_Projectile::UAnimNotify_Projectile()
-{
-#if WITH_EDITORONLY_DATA
-	NotifyColor = FColor(90, 90, 200, 255);
-#endif // WITH_EDITORONLY_DATA
-}
-
 FRotator UAnimNotify_Projectile::GetPlayerProjectileRotation(const FVector& InProjectSpawnLocation, const FVector& InEndLocation)
 {
 	FRotator Rotator;

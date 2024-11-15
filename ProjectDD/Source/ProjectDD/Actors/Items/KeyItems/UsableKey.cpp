@@ -24,4 +24,6 @@ void AUsableKey::OnItemUse(bool isUsable)
 	HUDManager->RemoveUnUsebleActor(this);
 	HUDManager->DrawStatusUI();
 	Destroy();
+
+	Super::OnItemUse(isUsable);
 }

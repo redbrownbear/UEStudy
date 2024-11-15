@@ -19,18 +19,23 @@ public:
 
 protected:
     virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
     EBTNodeResult::Type AvoidNearbyEnemies(UBehaviorTreeComponent& OwnerComp);
 
     UFUNCTION()
     void OnResult(EPathFollowingResult::Type MovementResult);
 
+protected:
+    UPROPERTY()
     class UAIAsyncTaskBlueprintProxy* Proxy;
 
     class UBehaviorTreeComponent* BehaviorTreeComponent = nullptr;
-    class UBlackboardComponent* BlackboardComponent = nullptr;	
+    class UBlackboardComponent* BlackboardComponent = nullptr;
+    class USplineComponent* SplineComponent = nullptr;
+
+    int32 SplinePoints = 0;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
     float DistanceThreshold;
 
+    bool bAvoiding = false;
 };

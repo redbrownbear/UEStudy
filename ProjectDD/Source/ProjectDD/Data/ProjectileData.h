@@ -6,6 +6,7 @@
 #include "ProjectileData.generated.h"
 
 class ABasicProjectile;
+class ABasicGrenade;
 
 /**
  * 
@@ -24,6 +25,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	TSubclassOf<ABasicProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	TSubclassOf<ABasicGrenade> GrenadeClass;
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	float MaxSpeed;

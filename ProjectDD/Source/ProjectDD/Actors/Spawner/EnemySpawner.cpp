@@ -5,6 +5,7 @@
 #include "Actors/Enemy/BasicEnemy.h"
 
 #include "SubSystem/EnemySpawnSubsystem.h"
+#include "NavigationSystem.h"
 
 
 // Sets default values
@@ -51,7 +52,14 @@ void AEnemySpawner::SpawnEnemy(const FEnemySpawnTableRow& InSpawnData, const FDa
     }
 
     SpawnedEnemy->SpawnData(InPawnHandle, InPawnHandle.RowName);
-    SpawnedEnemy->InitPathFinder();
+    SpawnedEnemy->InitAdditional();
+
+    UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+    if (NavSystem)
+    {
+        NavSystem->UpdateActorInNavOctree(*SpawnedEnemy);
+        NavSystem->Build();
+    }
 }
 
 

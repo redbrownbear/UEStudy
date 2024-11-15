@@ -35,20 +35,15 @@ void ABasicEnemyController::Tick(float DeltaTime)
 	const bool bMontagePlaying = OwningPawn->GetComponentByClass<USkeletalMeshComponent>()->GetAnimInstance()->IsAnyMontagePlaying();
 
 	Blackboard->SetValueAsBool(TEXT("MontagePlaying"), bMontagePlaying);
-
 	if (!bDamaged)
 	{
 		FindPlayerByPerception();
 	}
-
-	// Knife가 아니면 원거리 공격 할 수있게
-	ABasicEnemy* OwningEnemy = Cast<ABasicEnemy>(OwningPawn);
-	const bool bIsKnife = OwningEnemy->IsKnifeEnemy();
-	Blackboard->SetValueAsBool(TEXT("IsKnife"), bIsKnife);
 }
 
 void ABasicEnemyController::OnDamaged(float CurrentHP, float MaxHP)
 {
+	//자기들 끼리 공격하기
 	bDamaged = true;
 	AController* Instigator_ = StatusComponentRef->GetLastInstigator();
 	APawn* InstigatorPawn = Instigator_->GetPawn();
@@ -125,4 +120,14 @@ void ABasicEnemyController::SetPatrolPath(TObjectPtr<USplineComponent> NewPathFi
 	}
 
 	Blackboard->SetValueAsObject(TEXT("SplineComponent"), PathFinder);	
+}
+
+void ABasicEnemyController::SetBlackBoard()
+{
+	// Knife가 아니면 원거리 공격 할 수있게
+	APawn* OwningPawn = GetPawn();
+
+	ABasicEnemy* OwningEnemy = Cast<ABasicEnemy>(OwningPawn);
+	const bool bIsKnife = OwningEnemy->IsKnifeEnemy();
+	Blackboard->SetValueAsBool(TEXT("IsKnife"), bIsKnife);
 }

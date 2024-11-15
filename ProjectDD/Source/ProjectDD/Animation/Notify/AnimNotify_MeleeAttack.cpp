@@ -29,8 +29,9 @@ void UAnimNotify_MeleeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 	APawn* OwningPawn = Cast<APawn>(OwningActor);
 	check(OwningPawn);
 	ABasicEnemy* Enemy = Cast<ABasicEnemy>(OwningPawn);
-
+	check(Enemy);
 	ABasicPlayer* Player = Cast<ABasicPlayer>(OwningPawn);
+	check(Player);
 
 	const FName ProfileName = Enemy ? CollisionProfileName::Enemy : CollisionProfileName::Player;
 

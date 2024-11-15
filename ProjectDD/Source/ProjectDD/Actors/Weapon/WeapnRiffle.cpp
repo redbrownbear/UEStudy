@@ -3,7 +3,6 @@
 
 #include "Actors/Weapon/WeapnRiffle.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "SubSystem/HUDManagerSubsystem.h"
 
 void AWeapnRiffle::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 {

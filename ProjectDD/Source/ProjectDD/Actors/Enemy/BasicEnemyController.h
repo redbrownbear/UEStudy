@@ -40,6 +40,7 @@ public:
 
 public:
 	void SetPatrolPath(TObjectPtr<USplineComponent> NewPathFinder);
+	void SetBlackBoard();
 
 protected:
 	UPROPERTY()

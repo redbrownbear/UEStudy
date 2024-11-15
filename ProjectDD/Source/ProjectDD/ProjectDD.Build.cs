@@ -11,7 +11,7 @@ public class ProjectDD : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[]
 		{ 
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
-            "UMG", "MoviePlayer", "AIModule", "Paper2D", "Niagara"
+            "UMG", "MoviePlayer", "AIModule", "Paper2D", "Niagara", "NavigationSystem"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

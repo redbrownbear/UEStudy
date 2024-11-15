@@ -13,5 +13,8 @@ UCLASS()
 class PROJECTDD_API UAnimNotify_Grenade : public UAnimNotify
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
+
 };

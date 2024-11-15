@@ -10,12 +10,6 @@ APathFinder::APathFinder()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
-	
-	SplineComponent->AddSplinePoint(FVector(0.0f, 0.0f, 0.0f), ESplineCoordinateSpace::World);
-	SplineComponent->AddSplinePoint(FVector(-500.0f, 0.0f, 0.0f), ESplineCoordinateSpace::World);
-	SplineComponent->AddSplinePoint(FVector(-500.0f, 500.0f, 0.0f), ESplineCoordinateSpace::World);
-	SplineComponent->AddSplinePoint(FVector(-1000.0f, 600.0f, 0.0f), ESplineCoordinateSpace::World);
-	SplineComponent->AddSplinePoint(FVector(-1700.0f, -1000.0f, 0.0f), ESplineCoordinateSpace::World);
 
 	RootComponent = SplineComponent;
 }
