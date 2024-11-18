@@ -14,7 +14,5 @@ class PROJECTDD_API AWeaponGenerade : public ABasicWeapon
 {
 	GENERATED_BODY()
 
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bInterrupted) override;
 	virtual void Attack() override;
-	
 };

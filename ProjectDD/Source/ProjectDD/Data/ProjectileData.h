@@ -41,6 +41,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Projectile|Damage")
 	float Damage;
 
+	UPROPERTY(EditAnywhere, Category = "Grenade")
+	float ExplosionRadius;
+
+	UPROPERTY(EditAnywhere, Category = "Grenade")
+	float ExplosionDamage;
+
+	UPROPERTY(EditAnywhere, Category = "Grenade")
+	float FuseTime;
+
 	UPROPERTY(EditAnywhere, Category = "Projectile|Effect", meta = (RowType = "/Script/ProjectDD.EffectTableRow"))
 	FDataTableRowHandle HitEffectTableRowHandle;
 };

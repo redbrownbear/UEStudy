@@ -48,7 +48,7 @@ public:
 
 protected:
     UFUNCTION()
-    virtual void OnMontageEnd(UAnimMontage* Montage, bool bInterrupted) {};
+    virtual void OnMontageEnd();
 
     UFUNCTION()
     virtual void OnAim() {};

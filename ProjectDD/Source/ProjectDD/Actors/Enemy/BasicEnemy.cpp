@@ -36,8 +36,8 @@ ABasicEnemy::ABasicEnemy()
 		AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
 		AISenseConfig_Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("AISenseConfig_Sight"));
 		AISenseConfig_Sight->DetectionByAffiliation.bDetectNeutrals = true;
-		AISenseConfig_Sight->SightRadius = 1500.f;
-		AISenseConfig_Sight->LoseSightRadius = 2000.f;
+		AISenseConfig_Sight->SightRadius = 2000.0f;
+		AISenseConfig_Sight->LoseSightRadius = 2500.0f;
 		AISenseConfig_Sight->PeripheralVisionAngleDegrees = 120.f;
 		AIPerceptionComponent->ConfigureSense(*AISenseConfig_Sight);
 	}
@@ -115,7 +115,6 @@ void ABasicEnemy::InitAdditional()
 		if (ABasicEnemyController* BasicEnemyController = Cast<ABasicEnemyController>(Controller))
 		{
 			BasicEnemyController->SetPatrolPath(PathFinderRef->GetPath());
-			BasicEnemyController->SetBlackBoard();
 		}
 	}
 }
@@ -151,11 +150,8 @@ float ABasicEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACo
 	float DamageResult = StatusComponent->TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	if (FMath::IsNearlyZero(DamageResult)) { return 0.0; }
 
-	if (Controller)
-	{
-		Controller->StopMovement();
-	}
-
+	Controller->StopMovement();
+	
 	if (StatusComponent->IsDie() && !EnemyData->DieMontage.IsEmpty())
 	{
 		if (Controller)

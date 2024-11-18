@@ -8,12 +8,23 @@
 #include "Actors/Projectile/BasicGrenade.h"
 #include "Actors/Weapon/BasicWeapon.h"
 #include "Data/ProjectileData.h"
+#include "Actors/Enemy/BasicEnemy.h"
 
 
 void UAnimNotify_Grenade::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
     APawn* OwningPawn = Cast<APawn>(MeshComp->GetOwner());
-    check(OwningPawn);
+    if (!OwningPawn)
+    {
+        check(OwningPawn);
+        return;
+    }
+    AController* Controller = OwningPawn->GetController();
+    if (!Controller)
+    {
+        check(Controller);
+        return;
+    }
 
     UWeaponChildActorComponent* WeaponChildActorComponent = OwningPawn->GetComponentByClass<UWeaponChildActorComponent>();
     check(WeaponChildActorComponent);
@@ -28,25 +39,44 @@ void UAnimNotify_Grenade::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
     const FProjectileTableRow* ProjectileTableRow = WeaponTableRow->ProjectileRowHandle.GetRow<FProjectileTableRow>(TEXT("Projectile"));
     check(ProjectileTableRow);
 
-    UWorld* World = OwningPawn->GetWorld();
-    ABasicGrenade* Grenade = World->SpawnActorDeferred<ABasicGrenade>(ProjectileTableRow->GrenadeClass,
-        FTransform::Identity, OwningPawn, OwningPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+    FRotator ControlRotation = Controller->GetControlRotation();
+    FVector ThrowDirection = ControlRotation.Vector();
 
-    Grenade->SetData(WeaponTableRow->ProjectileRowHandle);
     FVector SpawnLocation = MeshComp->GetSocketLocation(SocketName::Weapon);
-    FRotator SpawnRotation = MeshComp->GetSocketRotation(SocketName::Weapon);
 
-    UProjectileMovementComponent* ProjectileMovement = Grenade->FindComponentByClass<UProjectileMovementComponent>();
-    if (ProjectileMovement)
+    //AI 전용
+    if (ABasicEnemy* BasicEnemy = Cast<ABasicEnemy>(OwningPawn))
     {
-        ProjectileMovement->SetVelocityInLocalSpace(ProjectileMovement->Velocity);
+        const float AngleDegrees = 30.0f; 
+        const float AngleRadians = FMath::DegreesToRadians(AngleDegrees);
+
+        FVector UpwardDirection = FVector(0.0f, 0.0f, FMath::Tan(AngleRadians));
+        ThrowDirection = (ThrowDirection + UpwardDirection).GetSafeNormal();
     }
 
-    FTransform NewTransform;
-    NewTransform.SetLocation(SpawnLocation);
-    NewTransform.SetRotation(SpawnRotation.Quaternion());
+    FVector LaunchVelocity = ThrowDirection * ProjectileTableRow->MaxSpeed;
 
-    Grenade->FinishSpawning(NewTransform);
-    Grenade->ProjectileFire(OwningPawn, WeaponActor->GetWeaponType(), 1);//한발씩 소모
+    UWorld* World = OwningPawn->GetWorld();
+    ABasicGrenade* Grenade = World->SpawnActorDeferred<ABasicGrenade>(
+        ProjectileTableRow->GrenadeClass, FTransform::Identity, OwningPawn, OwningPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+    if (Grenade)
+    {
+        Grenade->SetData(WeaponTableRow->ProjectileRowHandle);
 
+        FTransform NewTransform;
+        NewTransform.SetLocation(SpawnLocation);
+        NewTransform.SetRotation(ThrowDirection.Rotation().Quaternion());
+
+        Grenade->FinishSpawning(NewTransform);
+
+        // ProjectileMovementComponent를 사용해 초기 속도와 중력 설정
+        UProjectileMovementComponent* ProjectileMovement = Grenade->FindComponentByClass<UProjectileMovementComponent>();
+        if (ProjectileMovement)
+        {
+            ProjectileMovement->Velocity = LaunchVelocity;
+        }
+
+        // 수류탄 발사 처리
+        Grenade->ProjectileFire(OwningPawn, WeaponActor->GetWeaponType(), 1); // 한발 소모
+    }
 }

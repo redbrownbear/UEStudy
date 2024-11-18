@@ -8,8 +8,10 @@
 #include "Components/StaticMeshComponent.h"
 #include "Data/ProjectileData.h"
 #include "Enum/WeaponType.h"
+#include "Sound/SoundCue.h"
 
 #include "BasicGrenade.generated.h"
+
 
 UCLASS()
 class PROJECTDD_API ABasicGrenade : public AActor
@@ -33,6 +35,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void OnExplode();
+	virtual void OnExplosionFinished();
 
 
 protected:
@@ -46,4 +49,13 @@ protected:
 	FDataTableRowHandle DataTableRowHandle;
 
 	FProjectileTableRow* ProjectileData;
+
+	UParticleSystem* ExplosionEffect;
+	USoundCue* ExplosionSound;
+	float ExplosionRadius;
+	float ExplosionDamage;
+	float FuseTime;
+
+	FTimerHandle FuseTimerHandle;
+	FTimerHandle ExplosionTimerHandle;
 };

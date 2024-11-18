@@ -63,9 +63,6 @@ void ABasicWeapon::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 		check(BasicAnimInstance);
 		OwnerStatusComponent = OwningPawn->GetComponentByClass<UStatusComponent>();
 		check(OwnerStatusComponent);
-		{
-			BasicAnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnMontageEnd);
-		}
 
 		if (OwningPawn->IsA(ABasicPlayer::StaticClass()))
 		{
@@ -73,11 +70,6 @@ void ABasicWeapon::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 			check(SpringArm);
 		}
 
-	}
-
-	if(Data->WeaponType == EWeaponType::WT_Knife || Data->WeaponType == EWeaponType::WT_Grenade)
-	{
-		OwnerStatusComponent->SetAim(true);
 	}
 
 	// Input
@@ -121,7 +113,7 @@ void ABasicWeapon::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 
 void ABasicWeapon::OnFire(const FInputActionValue& InputActionValue)
 {
-	if (!OwnerStatusComponent->IsAim())
+	if (!OwnerStatusComponent->IsAim() && (WeaponTableRow->WeaponType == EWeaponType::WT_Pistol || WeaponTableRow->WeaponType == EWeaponType::WT_Rifle))
 		return;
 
 	EndMotion();
@@ -158,6 +150,18 @@ void ABasicWeapon::Attack()
 	}
 }
 
+void ABasicWeapon::OnMontageEnd()
+{
+	if (WeaponTableRow)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(OwningPawn->GetController());
+		if (PlayerController)
+		{
+			PlayerController->EnableInput(PlayerController);
+		}
+	}
+}
+
 void ABasicWeapon::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
@@ -174,4 +178,12 @@ void ABasicWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!WeaponTableRow || !OwnerStatusComponent || OwnerStatusComponent->CanMove())
+		return;
+
+	if (!BasicAnimInstance->Montage_IsPlaying(WeaponTableRow->WeaponAttackMontage))
+	{	
+		OwnerStatusComponent->SetFixedAttack(false);
+		OnMontageEnd();
+	}
 }

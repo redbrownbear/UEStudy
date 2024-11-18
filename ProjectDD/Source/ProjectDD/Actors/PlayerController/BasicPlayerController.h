@@ -49,7 +49,6 @@ protected:
 public:
 	void CrouchOver();
 	void RunOver();
-	void GetUsableActorFocus();
 
 	const FVector2D& GetMoveInputActionVector() { return InputMoveActionVector; }
 

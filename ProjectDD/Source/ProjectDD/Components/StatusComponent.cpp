@@ -125,6 +125,10 @@ void UStatusComponent::ProjectileFire(AController* EventInstigator, EWeaponType 
 	{
 		CharacterStatus.BulletCount9mm -= BulletCount;
 	}
+	else if (InWeaponType == EWeaponType::WT_Grenade)
+	{
+		CharacterStatus.GrenadeCount -= BulletCount;
+	}
 
 	SetUI();
 }

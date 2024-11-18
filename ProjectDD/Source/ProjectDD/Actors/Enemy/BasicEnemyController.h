@@ -10,6 +10,8 @@
 #include "Components/StatusComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Actors/Player/MainPlayer.h"
+
 #include "BasicEnemyController.generated.h"
 
 /**
@@ -40,7 +42,9 @@ public:
 
 public:
 	void SetPatrolPath(TObjectPtr<USplineComponent> NewPathFinder);
-	void SetBlackBoard();
+
+private:
+	void SwitchAttackDetect(AMainPlayer* DetectedPlayer, EWeaponType InWeaponType, float InDistance);
 
 protected:
 	UPROPERTY()

@@ -15,7 +15,6 @@ class PROJECTDD_API AWeaponKnife : public ABasicWeapon
 	GENERATED_BODY()
 
 protected:
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bInterrupted) override;
 	virtual void Attack() override;
 
 };

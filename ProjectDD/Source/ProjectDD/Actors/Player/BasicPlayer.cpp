@@ -106,11 +106,7 @@ float ABasicPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AC
 	float DamageResult = StatusComponent->TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	if (FMath::IsNearlyZero(DamageResult)) { return 0.0; }
 
-	if (Controller)
-	{
-		Controller->StopMovement();
-	}
-
+	Controller->StopMovement();
 	if (StatusComponent->IsDie() && !CharacterData->DieMontage.IsEmpty())
 	{
 		PlayerController = Cast<APlayerController>(Controller);

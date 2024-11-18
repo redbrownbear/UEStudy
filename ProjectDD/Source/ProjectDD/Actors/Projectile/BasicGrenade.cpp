@@ -2,9 +2,13 @@
 
 
 #include "Actors/Projectile/BasicGrenade.h"
+#include "Kismet/GameplayStatics.h"
 #include "Misc/Utils.h"
 #include "Actors/Enemy/BasicEnemy.h"
 #include "Actors/Player/BasicPlayer.h"
+#include "SubSystem/ActorPoolSubsystem.h"
+#include "Kismet/KismetMathLibrary.h"
+
 
 // Sets default values
 ABasicGrenade::ABasicGrenade()
@@ -16,9 +20,6 @@ ABasicGrenade::ABasicGrenade()
 	RootComponent = StaticMeshComponent;
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-
-	StaticMeshComponent->SetCollisionProfileName(CollisionProfileName::Projectile);
-
 }
 
 void ABasicGrenade::SetData(const FDataTableRowHandle& InDataTableRowHandle)
@@ -30,6 +31,9 @@ void ABasicGrenade::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 
 	ProjectileData = Data;
 	InitialLifeSpan = Data->LifeSpan;
+	ExplosionRadius = Data->ExplosionRadius;
+	ExplosionDamage = Data->ExplosionDamage;
+	FuseTime = Data->FuseTime;
 
 	ProjectileMovementComponent->InitialSpeed = Data->MaxSpeed;
 	ProjectileMovementComponent->MaxSpeed = Data->MaxSpeed;
@@ -38,7 +42,13 @@ void ABasicGrenade::SetData(const FDataTableRowHandle& InDataTableRowHandle)
 	StaticMeshComponent->SetStaticMesh(Data->StaticMesh);
 	StaticMeshComponent->SetRelativeTransform(Data->Transform);
 
+	StaticMeshComponent->SetSimulatePhysics(true);
+	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	StaticMeshComponent->SetCollisionResponseToAllChannels(ECR_Block);
 	StaticMeshComponent->SetCollisionProfileName(CollisionProfileName::Grenade);
+
+	StaticMeshComponent->SetLinearDamping(1.0f);
+	StaticMeshComponent->SetAngularDamping(1.0f);
 
 	StaticMeshComponent->MoveIgnoreActors.Empty();
 	StaticMeshComponent->MoveIgnoreActors.Add(GetOwner());
@@ -57,6 +67,8 @@ void ABasicGrenade::ProjectileFire(APawn* InOwner, EWeaponType InWeaponType, int
 	{
 		Player->FireProjectile(InWeaponType, InCount);
 	}
+
+	GetWorld()->GetTimerManager().SetTimer(FuseTimerHandle, this, &ABasicGrenade::OnExplode, FuseTime);
 }
 
 // Called when the game starts or when spawned
@@ -75,5 +87,35 @@ void ABasicGrenade::Tick(float DeltaTime)
 
 void ABasicGrenade::OnExplode()
 {
+	// 폭발 데미지 처리
+	UGameplayStatics::ApplyRadialDamage(
+		this,
+		ExplosionDamage,
+		GetActorLocation(),
+		ExplosionRadius,
+		UDamageType::StaticClass(),
+		TArray<AActor*>(),
+		this,
+		GetInstigatorController(),
+		true
+	);
+
+	FTransform NewTransform;
+	NewTransform.SetLocation(GetActorLocation());
+	NewTransform.SetRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+
+	GetWorld()->GetSubsystem<UActorPoolSubsystem>()->SpawnHitEffectWithDecal(NewTransform, ProjectileData->HitEffectTableRowHandle);
+
+	GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, this, &ABasicGrenade::OnExplosionFinished, 0.5f, false);
+	GetWorld()->GetTimerManager().ClearTimer(FuseTimerHandle);
+}
+
+void ABasicGrenade::OnExplosionFinished()
+{
+	StaticMeshComponent->SetSimulatePhysics(false);
+	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticMeshComponent->SetVisibility(false);
+
+	GetWorld()->GetTimerManager().ClearTimer(ExplosionTimerHandle);
 }
 

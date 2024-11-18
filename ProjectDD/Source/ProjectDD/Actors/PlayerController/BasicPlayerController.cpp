@@ -217,6 +217,8 @@ void ABasicPlayerController::OnInterAct(const FInputActionValue& InputActionValu
 
 void ABasicPlayerController::OnChangeWeapon(const FInputActionValue& InputActionValue, EWeaponType InWeaponType)
 {
+	if (StatusComponent && (!StatusComponent->CanMove() || StatusComponent->IsAim())) { return; }
+
 	if (InputActionValue.Get<bool>())
 	{	
 		ABasicPlayer* ControlledCharacter = Cast<ABasicPlayer>(GetPawn());
@@ -256,10 +258,6 @@ void ABasicPlayerController::RunOver()
 	ABasicPlayer* ControlledCharacter = Cast<ABasicPlayer>(GetPawn());
 	ControlledCharacter->SetMoveSpeed(false);
 	StatusComponent->SetRun(false);
-}
-
-void ABasicPlayerController::GetUsableActorFocus()
-{
 }
 
 void ABasicPlayerController::BindingWeapon(UEnhancedInputComponent* InEnhancedInputComponent, const FName& InName, const EWeaponType& InWeaponType)

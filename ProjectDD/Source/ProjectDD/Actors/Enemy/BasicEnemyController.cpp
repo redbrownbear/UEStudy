@@ -5,7 +5,6 @@
 #include "GameFramework/Character.h"
 #include "Components/StatusComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Actors/Player/MainPlayer.h"
 #include "Actors/Enemy/BasicEnemy.h"
 
 void ABasicEnemyController::BeginPlay()
@@ -31,25 +30,37 @@ void ABasicEnemyController::Tick(float DeltaTime)
 
 	APawn* OwningPawn = GetPawn();
 
+	ABasicEnemy* OwningEnemy = Cast<ABasicEnemy>(GetPawn());
+
 	// Montage가 Play 중이라면 BT 내부에서 AI 진행을 멈춘다
 	const bool bMontagePlaying = OwningPawn->GetComponentByClass<USkeletalMeshComponent>()->GetAnimInstance()->IsAnyMontagePlaying();
 
 	Blackboard->SetValueAsBool(TEXT("MontagePlaying"), bMontagePlaying);
-	if (!bDamaged)
-	{
-		FindPlayerByPerception();
-	}
+
+	FindPlayerByPerception();
 }
 
 void ABasicEnemyController::OnDamaged(float CurrentHP, float MaxHP)
 {
-	//자기들 끼리 공격하기
-	bDamaged = true;
 	AController* Instigator_ = StatusComponentRef->GetLastInstigator();
 	APawn* InstigatorPawn = Instigator_->GetPawn();
-	check(InstigatorPawn);
-	Blackboard->SetValueAsObject(TEXT("DetectedPlayer"), Cast<UObject>(InstigatorPawn));
-	UKismetSystemLibrary::K2_SetTimer(this, TEXT("ResetOnDamaged"), 10.f, false);
+
+	if (!InstigatorPawn)
+		return;
+
+	bDamaged = true;
+
+	ABasicEnemy* OwningEnemy = Cast<ABasicEnemy>(GetPawn());
+	if (OwningEnemy->GetWeaponType() == EWeaponType::WT_Knife || OwningEnemy->GetWeaponType() == EWeaponType::WT_Grenade)
+	{
+		Blackboard->SetValueAsObject(TEXT("DetectedPlayer"), Cast<UObject>(InstigatorPawn));
+		return;
+	}
+		
+	//자기들 끼리 공격하기
+	Blackboard->ClearValue(TEXT("AttackRangePlayer"));
+	Blackboard->SetValueAsObject(TEXT("AttackRangePlayer"), Cast<UObject>(InstigatorPawn));
+	UKismetSystemLibrary::K2_SetTimer(this, TEXT("ResetOnDamaged"), 5.0f, false);
 }
 
 void ABasicEnemyController::ResetOnDamaged()
@@ -91,14 +102,24 @@ void ABasicEnemyController::FindPlayerByPerception()
 		{
 			if (AMainPlayer* DetectedPlayer = Cast<AMainPlayer>(It))
 			{
+				if (!DetectedPlayer || !OwningPawn) return;
+
+				FVector PlayerLocation = DetectedPlayer->GetActorLocation();
+				FVector EnemyLocation = OwningPawn->GetActorLocation();
+				float Distance = FVector::Dist(PlayerLocation, EnemyLocation);
+
+				ABasicEnemy* OwningEnemy = Cast<ABasicEnemy>(GetPawn());
+				if (!OwningEnemy) return;
+
+				SwitchAttackDetect(DetectedPlayer, OwningEnemy->GetWeaponType(), Distance);
+
 				bFound = true;
-				Blackboard->SetValueAsObject(TEXT("DetectedPlayer"), Cast<UObject>(DetectedPlayer));
-				break;
 			}
 		}
 		if (!bFound)
 		{
 			Blackboard->ClearValue(TEXT("DetectedPlayer"));
+			Blackboard->ClearValue(TEXT("AttackRangePlayer"));
 		}
 	}
 }
@@ -122,12 +143,42 @@ void ABasicEnemyController::SetPatrolPath(TObjectPtr<USplineComponent> NewPathFi
 	Blackboard->SetValueAsObject(TEXT("SplineComponent"), PathFinder);	
 }
 
-void ABasicEnemyController::SetBlackBoard()
+void ABasicEnemyController::SwitchAttackDetect(AMainPlayer* DetectedPlayer, EWeaponType InWeaponType, float InDistance)
 {
-	// Knife가 아니면 원거리 공격 할 수있게
-	APawn* OwningPawn = GetPawn();
+	bool isAttack = bDamaged;
 
-	ABasicEnemy* OwningEnemy = Cast<ABasicEnemy>(OwningPawn);
-	const bool bIsKnife = OwningEnemy->IsKnifeEnemy();
-	Blackboard->SetValueAsBool(TEXT("IsKnife"), bIsKnife);
+	switch (InWeaponType)
+	{
+	case EWeaponType::WT_Knife:
+		if (InDistance <= 100.0f)
+		{
+			Blackboard->SetValueAsObject(TEXT("AttackRangePlayer"), DetectedPlayer);
+			Blackboard->ClearValue(TEXT("DetectedPlayer"));
+			isAttack = true;
+		}
+		break;
+	case EWeaponType::WT_Pistol:
+	case EWeaponType::WT_Rifle:
+		if (InDistance <= 2000.0f)
+		{
+			Blackboard->SetValueAsObject(TEXT("AttackRangePlayer"), DetectedPlayer);
+			Blackboard->ClearValue(TEXT("DetectedPlayer"));
+			isAttack = true;
+		}
+		break;
+	case EWeaponType::WT_Grenade:
+		if (InDistance <= 1300.0f)
+		{
+			Blackboard->SetValueAsObject(TEXT("AttackRangePlayer"), DetectedPlayer);
+			Blackboard->ClearValue(TEXT("DetectedPlayer"));
+			isAttack = true;
+		}
+		break;
+	default:
+		break;
+	}
+
+	if(!isAttack)
+		Blackboard->ClearValue(TEXT("AttackRangePlayer"));
+		Blackboard->SetValueAsObject(TEXT("DetectedPlayer"), DetectedPlayer);
 }

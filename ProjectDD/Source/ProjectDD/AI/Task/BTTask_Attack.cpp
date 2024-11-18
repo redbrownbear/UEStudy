@@ -9,7 +9,6 @@
 UBTTask_Attack::UBTTask_Attack()
 {
     NodeName = TEXT("Attack");
-    DistanceThreshold = 1000.0f;
 }
 
 EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -43,11 +42,11 @@ EBTNodeResult::Type UBTTask_Attack::Attack(UBehaviorTreeComponent& OwnerComp)
 
     FVector ActorLocation = OwnerActor->GetActorLocation();
 
-    UObject* DetectedPlayer = BlackboardComponent->GetValueAsObject(TEXT("DetectedPlayer"));
-    if (IsValid(DetectedPlayer))
+    UObject* AttackRangePlayer = BlackboardComponent->GetValueAsObject(TEXT("AttackRangePlayer"));
+    if (IsValid(AttackRangePlayer))
     {    
         // UObject를 AActor로 캐스팅
-        AActor* PlayerActor = Cast<AActor>(DetectedPlayer);
+        AActor* PlayerActor = Cast<AActor>(AttackRangePlayer);
         check(PlayerActor);
 
         ABasicWeapon* Weapon = Cast<ABasicWeapon>(WeaponComponent->GetChildActor());

@@ -66,8 +66,9 @@ public:
 
 public:
 	TArray<AActor*> GetNearbyEnemies() { return NearbyEnemies; }
+	bool IsKnifeEnemy() { return GetWeaponType() == EWeaponType::WT_Knife; }
 
-	bool IsKnifeEnemy() { return EnemyData->WeaponType == EWeaponType::WT_Knife; }
+	EWeaponType GetWeaponType() { return EnemyData->WeaponType; }
 
 protected:
 	UPROPERTY(BlueprintReadWrite)

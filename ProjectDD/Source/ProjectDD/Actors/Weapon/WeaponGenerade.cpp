@@ -3,17 +3,9 @@
 
 #include "Actors/Weapon/WeaponGenerade.h"
 
-void AWeaponGenerade::OnMontageEnd(UAnimMontage* Montage, bool bInterrupted)
-{
-	if (WeaponTableRow && WeaponTableRow->WeaponAttackMontage == Montage)
-	{
-		OwnerStatusComponent->SetAttack(false);
-	}
-}
-
 void AWeaponGenerade::Attack()
 {
-	if (OwnerStatusComponent->Is9BulletEmpty() && OwningPawn->IsA(ABasicPlayer::StaticClass()))
+	if (OwnerStatusComponent->IsGrenadeEmpty() && OwningPawn->IsA(ABasicPlayer::StaticClass()))
 	{
 		UHUDManagerSubsystem* HUDManager = GetWorld()->GetGameInstance()->GetSubsystem<UHUDManagerSubsystem>();
 		if (!HUDManager)
@@ -26,6 +18,12 @@ void AWeaponGenerade::Attack()
 		return;
 	}
 
+	APlayerController* PlayerController = Cast<APlayerController>(OwningPawn->GetController());
+	if (PlayerController)
+	{
+		PlayerController->DisableInput(PlayerController);
+	}
+
+	OwnerStatusComponent->SetFixedAttack(true);
 	Super::Attack();
-	OwnerStatusComponent->SetAttack(true);
 }

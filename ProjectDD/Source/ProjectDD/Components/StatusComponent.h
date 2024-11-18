@@ -34,11 +34,12 @@ public:
 	void SetDie(const bool bFlag) { bDie = bFlag; }
 	bool IsDie() const { return bDie; }
 
-	void SetAttack(const bool bFlag) { bAttack = bFlag; }
+	void SetFixedAttack(const bool bFlag) { bAttack = bFlag; }
 	bool CanMove() const { return !bAttack && !bDie; }
 
 	bool Is556BulletEmpty() { return CharacterStatus.BulletCount556mm <= 0; }
 	bool Is9BulletEmpty() { return CharacterStatus.BulletCount9mm <= 0; }
+	bool IsGrenadeEmpty() { return CharacterStatus.GrenadeCount <= 0; }
 
 
 protected:

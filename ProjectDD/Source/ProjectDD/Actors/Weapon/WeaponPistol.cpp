@@ -72,6 +72,9 @@ void AWeaponPistol::OnAim()
 
 void AWeaponPistol::EndAim()
 {
+	if (!SpringArm)
+		return;
+
 	SpringArm->OnEndAiming();
 	OwnerStatusComponent->SetAim(false);
 	ParticleSystemComponent->DeactivateImmediate();
@@ -87,9 +90,6 @@ void AWeaponPistol::Tick(float DeltaTime)
 
 void AWeaponPistol::UpdateDesiredAimRotation(const float DeltaTime)
 {
-	if (!OwnerStatusComponent->IsAim())
-		return;
-
 	{
 		const FRotator OwnerRotation = OwningPawn->GetActorRotation();
 		FRotator OwnerInvRotation = OwnerRotation.GetInverse();
