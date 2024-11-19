@@ -17,8 +17,6 @@ AUsableActor::AUsableActor()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SetFolderPath(FName("ActorOnly"));
 }
 
 void AUsableActor::OnItemUse(bool isUse)
@@ -50,6 +48,8 @@ void AUsableActor::SetData(const FUsableActorTableRow& InActorData)
 void AUsableActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetFolderPath(FName("ActorOnly"));
 }
 
 // Called every frame

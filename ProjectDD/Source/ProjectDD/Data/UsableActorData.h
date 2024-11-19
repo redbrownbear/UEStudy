@@ -27,8 +27,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Actor")
 	bool bCanPickUp = false;
 
+	UPROPERTY(EditAnywhere, Category = "Actor")
+	bool bTrap = false;
+
 	UPROPERTY(EditAnywhere, Category = "Key")
 	EKeyItemType KeyItemType;
+
+	UPROPERTY(EditAnywhere, Category = "Key")
+	FName KeyItemName;
 
 	UPROPERTY(EditAnywhere, Category = "TEXT")
 	FName ItemAction;

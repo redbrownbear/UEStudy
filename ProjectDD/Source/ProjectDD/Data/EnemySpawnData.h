@@ -24,6 +24,9 @@ public:
     UPROPERTY(EditAnywhere, Category = "SpawnData")
     FRotator SpawnRotation;
 
+    UPROPERTY(EditAnywhere, Category = "SpawnData")
+    float SpawnType;
+
     UPROPERTY(EditAnywhere, meta = (RowType = "/Script/ProjectDD.PawnTableRow"))
     FDataTableRowHandle EnemyDataHandle;
 };

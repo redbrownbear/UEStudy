@@ -49,6 +49,7 @@ void ABasicEnemyController::OnDamaged(float CurrentHP, float MaxHP)
 		return;
 
 	bDamaged = true;
+	UKismetSystemLibrary::K2_SetTimer(this, TEXT("ResetOnDamaged"), 7.0f, false);
 
 	ABasicEnemy* OwningEnemy = Cast<ABasicEnemy>(GetPawn());
 	if (OwningEnemy->GetWeaponType() == EWeaponType::WT_Knife || OwningEnemy->GetWeaponType() == EWeaponType::WT_Grenade)
@@ -59,8 +60,7 @@ void ABasicEnemyController::OnDamaged(float CurrentHP, float MaxHP)
 		
 	//자기들 끼리 공격하기
 	Blackboard->ClearValue(TEXT("AttackRangePlayer"));
-	Blackboard->SetValueAsObject(TEXT("AttackRangePlayer"), Cast<UObject>(InstigatorPawn));
-	UKismetSystemLibrary::K2_SetTimer(this, TEXT("ResetOnDamaged"), 5.0f, false);
+	Blackboard->SetValueAsObject(TEXT("AttackRangePlayer"), Cast<UObject>(InstigatorPawn));	
 }
 
 void ABasicEnemyController::ResetOnDamaged()
@@ -116,7 +116,7 @@ void ABasicEnemyController::FindPlayerByPerception()
 				bFound = true;
 			}
 		}
-		if (!bFound)
+		if (!bFound && !bDamaged)
 		{
 			Blackboard->ClearValue(TEXT("DetectedPlayer"));
 			Blackboard->ClearValue(TEXT("AttackRangePlayer"));

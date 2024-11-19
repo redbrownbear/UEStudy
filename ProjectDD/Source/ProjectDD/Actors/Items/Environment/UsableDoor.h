@@ -18,6 +18,9 @@ protected:
 	virtual void OnItemUse(bool isUsable) override;
 
 protected:
+	bool IsTrapDoor();
+
+protected:
 	float LocalRotation;
 
 	UPROPERTY(EditAnywhere)
