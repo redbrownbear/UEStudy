@@ -4,6 +4,8 @@
 #include "Actors/Items/Environment/UsableDoor.h"
 #include "SubSystem/ItemInventorySubsystem.h"
 #include "SubSystem/HUDManagerSubsystem.h"
+#include "Kismet/GameplayStatics.h"
+#include "SubSystem/ActorPoolSubsystem.h"
 
 
 void AUsableDoor::OnItemUse(bool isUsable)
@@ -30,6 +32,12 @@ void AUsableDoor::OnItemUse(bool isUsable)
 			HUDManager->ShowEmergencyMessage(FormattedText.ToString());
 			return;
 		}
+	}
+
+	if (ActorData.KeyItemType == EKeyItemType::Key_Blue)
+	{
+		UGameplayStatics::OpenLevel(this, FName("End"));
+		return;
 	}
 
 

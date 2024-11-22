@@ -21,8 +21,6 @@ void UActorPoolSubsystem::SpawnHitEffectWithDecal(const FTransform& SpawnTransfo
 
 void UActorPoolSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
-	//EffectPool->SetFolderPath(FName("PawnOnly"));
-
 	EffectPool.InitializePool(&InWorld, 20);
 	HitEffectDecalPool.InitializePool(&InWorld, 20);
 }

@@ -43,6 +43,10 @@ void ABasicPlayerController::BeginPlay()
 			MovementComponent->bOrientRotationToMovement = false;  // 이동 방향으로 회전하지 않음
 		}
 	}
+
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
+	bShowMouseCursor = false;
 }
 
 void ABasicPlayerController::SetupInputComponent()
