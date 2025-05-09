@@ -14,4 +14,8 @@ class PROJECTDD_API ADDAdvanceGameMode : public AGameMode
 {
 	GENERATED_BODY()
 	
+	//« ø‰«— 
+public:
+	virtual void StartPlay() override;
+
 };

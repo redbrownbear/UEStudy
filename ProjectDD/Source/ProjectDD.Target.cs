@@ -11,5 +11,5 @@ public class ProjectDDTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_4;
 		ExtraModuleNames.Add("ProjectDD");
-	}
+	}	
 }
