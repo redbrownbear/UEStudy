@@ -19,7 +19,7 @@ void UUI_InGameWidget::NativeConstruct()
 		return;
 	}
 
-	UIPlayerStatClass = Cast<UUI_PlayerStatus>(GetWidgetFromName(TEXT("UI_Player_Status")));
+	UIPlayerStatClass = Cast<UUI_PlayerStatus>(GetWidgetFromName(TEXT("UI_PlayerStatus")));
 	if (!UIPlayerStatClass)
 	{
 		check(false);
